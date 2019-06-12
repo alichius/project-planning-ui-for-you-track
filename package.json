@@ -1,0 +1,91 @@
+{
+  "name": "@fschopp/project-planning-ui-for-you-track",
+  "version": "0.1.0-SNAPSHOT",
+  "description": "User-interface for fschopp/project-planning-for-you-track. Allows easy embedding of arbitrary widgets (for instance, a Gantt chart) in order to visualize project schedules created from YouTrack saved searches.",
+  "keywords": [
+    "Gantt",
+    "YouTrack",
+    "project planning",
+    "scheduling",
+    "user interface"
+  ],
+  "author": "Florian Schoppmann <mail@florian-schoppmann.net> (https://florian-schoppmann.net)",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "module": "dist/es6/index.js",
+  "types": "dist/es6/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fschopp/project-planning-ui-for-you-track.git"
+  },
+  "homepage": "https://github.com/fschopp/project-planning-ui-for-you-track",
+  "bugs": {
+    "url": "https://github.com/fschopp/project-planning-ui-for-you-track/issues"
+  },
+  "files": [
+    "/dist",
+    "/src/main"
+  ],
+  "scripts": {
+    "prepare": "npm run compile && rollup -c && (cd target/main ; find . -name '*.ts.map' -o -name '*.ts' | xargs tar cf -) | (cd dist/es6 ; tar xf -) && find dist -name '*.map' | xargs node target/scripts/clean-sourcemap.js",
+    "clean": "rm -rf dist/ target/",
+    "lint": "tslint --format verbose --project .",
+    "test": "jest",
+    "test:coverage": "npm run test -- --collect-coverage",
+    "compile": "tsc && tsc -p src/scripts/ && node target/scripts/surplus-compiler.js target/demo/*.jsx target/main/components/*/*.jsx",
+    "doc": "typedoc",
+    "demo": "parcel serve --cache-dir target/parcel-cache --out-dir target/parcel --public-url /project-planning-ui-for-you-track/ src/demo/index.html",
+    "demo:build": "parcel build --cache-dir target/parcel-cache --out-dir target/parcel --public-url /project-planning-ui-for-you-track/ src/demo/index.html",
+    "package": "npm run clean && npm run lint && npm run test:coverage && npm run prepare && npm run doc && npm run demo:build && src/scripts/gh_pages.sh"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "dependencies": {
+    "@fschopp/project-planning-for-you-track": "^0.9.1",
+    "s-array": "^0.4.10",
+    "s-js": "^0.4.9",
+    "sortablejs": "^1.9.0",
+    "surplus": "^0.5.3",
+    "surplus-mixin-data": "^0.5.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "@types/jest": "^24.0.13",
+    "@types/sortablejs": "^1.7.2",
+    "babel-plugin-unassert": "^3.0.1",
+    "jest": "^24.8.0",
+    "parcel-bundler": "^1.12.3",
+    "postcss-import": "^12.0.1",
+    "rollup": "^1.14.6",
+    "rollup-plugin-babel": "^4.3.2",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "rollup-plugin-terser": "^5.0.0",
+    "source-map": "^0.7.3",
+    "ts-jest": "^24.0.2",
+    "tslint": "^5.17.0",
+    "typedoc": "TypeStrong/typedoc#f781b20dda3dfafd453cf540f58fcd8cf4473316",
+    "typescript": "^3.5.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/src/main/*.ts?(x)",
+      "**/src/main/utils/**/*.ts?(x)"
+    ],
+    "coverageDirectory": "target/coverage",
+    "testMatch": [
+      "**/src/spec/**/*.spec.ts?(x)"
+    ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  }
+}
