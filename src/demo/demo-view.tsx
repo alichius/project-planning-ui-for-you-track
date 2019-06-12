@@ -8,9 +8,17 @@ export function DemoView({ctrl}: {ctrl: DemoCtrl}): HTMLElement {
       <NavView appCtrl={ctrl.appCtrl} />
       <main role="main" class="container">
         <div fn={withClassIff(() => ctrl.appCtrl.app.currentPage() !== Page.HOME, 'd-none')}>
-          <h2 class="mt-3">Demo: Project Planning UI for YouTrack</h2>
+          <h2 class="mt-3">Demo: Project Planning User Interface for YouTrack</h2>
           <p class="lead">
-            Scheduling jobs on related machines, with optional preemption and splitting of jobs across machines.
+            User-interface for&#32;
+            <a href="https://github.com/fschopp/project-planning-for-you-track">
+              fschopp/project-planning-for-you-track
+            </a>.
+            Allows easy embedding of arbitrary widgets (for instance, a Gantt chart) in order to visualize project
+            schedules created from&#32;
+            <a href="https://www.jetbrains.com/help/youtrack/standalone/Saved-Search.html">
+              YouTrack saved searches
+            </a>.
           </p>
           <pre>{ctrl.jsonProjectPlan()}</pre>
         </div>

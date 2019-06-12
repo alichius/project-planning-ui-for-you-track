@@ -1,6 +1,6 @@
 {
   "name": "@fschopp/project-planning-ui-for-you-track",
-  "version": "0.1.0-SNAPSHOT",
+  "version": "0.1.0",
   "description": "User-interface for fschopp/project-planning-for-you-track. Allows easy embedding of arbitrary widgets (for instance, a Gantt chart) in order to visualize project schedules created from YouTrack saved searches.",
   "keywords": [
     "Gantt",

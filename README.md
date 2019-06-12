@@ -24,7 +24,7 @@ Published releases include TypeScript type declarations and are available as eit
 
 ### Node.js
 
-Install with `npm install @fschopp/project-planning-ui-for-you-track` or `yarn add @fschopp/project-planning-ui-for-you-track`. See [the demo](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/demo) for a usage example. Note that in a new project, `'../main'` in the import statements would have to be replaced by `'@fschopp/project-planning-ui-for-you-track'`.
+Install with `npm install @fschopp/project-planning-ui-for-you-track` or `yarn add @fschopp/project-planning-ui-for-you-track`. See [the demo directory](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/demo) for a usage example. Note that in a new project, `'../main'` in the import statements would have to be replaced by `'@fschopp/project-planning-ui-for-you-track'`.
 
 ### Browser
 
@@ -40,6 +40,6 @@ Note that you also need to add `<script>` elements for all (transitive) dependen
 ## Build
 
 - See the corresponding section in project [fschopp/project-planning-js](https://github.com/fschopp/project-planning-js#build). The description there applies for this project as well.
-- This project requires additional machinery to compile [TypeScript .tsx files](https://www.typescriptlang.org/docs/handbook/jsx.html) into plain JavaScript. The compilation happens in two steps: First, the TypeScript compiler produces a .jsx file. Afterwards, the Surplus compiler takes this to produce a plain .js file. Unfortunately, this build chain is not well supported by existing tools (see [Surplus issue #87](https://github.com/adamhaile/surplus/issues/87) for background). This project therefore has its [own Surplus compilation script](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/src/scripts/surplus-compiler.ts). This script also creates proper source maps.
+- This project requires additional machinery to compile [TypeScript .tsx files](https://www.typescriptlang.org/docs/handbook/jsx.html) into plain JavaScript. The compilation happens in two steps: First, the TypeScript compiler produces a .jsx file. Afterwards, the Surplus compiler takes this to produce a plain .js file. Unfortunately, this build chain is not well supported by existing tools (see [Surplus issue #87](https://github.com/adamhaile/surplus/issues/87) for background). This project therefore has its [own Surplus compilation script](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/scripts/surplus-compiler.ts). This script also creates proper source maps.
 - Parcel is given only pure JavaScript assets, which also means that compilation of the demo has to be manually triggered even when `parcel serve` is currently running.
 - For the distribution, [rollup-plugin-postcss](https://github.com/egoist/rollup-plugin-postcss) is used to combine the different css assets into one.
