@@ -1,8 +1,7 @@
 import { mapSample } from 's-array';
 // noinspection ES6UnusedImports
 import * as Surplus from 'surplus';
-import data from 'surplus-mixin-data';
-import { focusOnChangeToValue, sortableBindSarray, withClassIff } from '../../utils/surplus';
+import { bindNumber, bindString, focusOnChangeToValue, sortableBindSarray, withClassIff } from '../../utils/surplus';
 import { ContributorKind } from '../contributor/contributor-model';
 import {
   ContributorView,
@@ -30,7 +29,7 @@ export function ContributorsView({className, ctrl}: {className?: string, ctrl: C
       <div class="list-group-add d-flex">
         <div class="form-inline flex-grow-1">
           <div class="flex-fill mr-3 mb-1 mb-sm-0" fn={ctrl.withClassIffExternalContributor(true, HIDDEN_CLASS)}>
-            <select class={SELECT_CLASS} fn={data(ctrl.newEntry.id)}>
+            <select class={SELECT_CLASS} fn={bindString(ctrl.newEntry.id)}>
               {ctrl.newEntry.id().length === 0 &&
                 <option value="" selected disabled>Choose to add</option>
               }
@@ -45,7 +44,7 @@ export function ContributorsView({className, ctrl}: {className?: string, ctrl: C
           <div class="input-group input-group-sm flex-nowrap flex-fill mr-3 mb-1 mb-sm-0"
                fn={ctrl.withClassIffExternalContributor(false, HIDDEN_CLASS)}>
             <input class={INPUT_CLASS} size={10} aria-label="Name of external contributor"
-                   fn1={data(ctrl.newEntry.name)}
+                   fn1={bindString(ctrl.newEntry.name)}
                    fn2={focusOnChangeToValue<ContributorKind>(ctrl.newEntryType, ContributorKind.EXTERNAL)} />
             <div class="input-group-append">
               <button type="button" class="btn btn-outline-secondary" onClick={() => ctrl.reset()}>Reset</button>
@@ -55,7 +54,7 @@ export function ContributorsView({className, ctrl}: {className?: string, ctrl: C
                fn={ctrl.withClassIffExternalContributor(false, HIDDEN_CLASS)}>
             <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS}
                    style={{width: INPUT_WIDTH_3_DIGITS}}
-                   aria-label="Number of persons" fn={data(ctrl.newEntry.numMembers)} />
+                   aria-label="Number of persons" fn={bindNumber(ctrl.newEntry.numMembers)} />
             <div class="input-group-append">
               <span class="input-group-text">👤</span>
             </div>
@@ -63,7 +62,7 @@ export function ContributorsView({className, ctrl}: {className?: string, ctrl: C
           <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
             <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK}
                    style={{width: INPUT_WIDTH_3_DIGITS}}
-                   aria-label="Hours per week per person" fn={data(ctrl.newEntry.hoursPerWeek)} />
+                   aria-label="Hours per week per person" fn={bindNumber(ctrl.newEntry.hoursPerWeek)} />
             <div class="input-group-append">
               <span class="input-group-text">h/week</span>
             </div>

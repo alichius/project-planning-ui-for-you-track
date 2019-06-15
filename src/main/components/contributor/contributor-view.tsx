@@ -1,6 +1,6 @@
 // noinspection ES6UnusedImports
 import * as Surplus from 'surplus';
-import data from 'surplus-mixin-data';
+import { bindNumber, bindString } from '../../utils/surplus';
 import { ContributorCtrl } from './contributor-ctrl';
 import { ContributorKind } from './contributor-model';
 
@@ -24,7 +24,7 @@ export function ContributorView({ctrl}: {ctrl: ContributorCtrl}): HTMLElement {
         <div class="flex-fill mr-3 mb-1 mb-sm-0">
           {ctrl.contributor.type === ContributorKind.EXTERNAL
               ? <input class={INPUT_CLASS} aria-label="Name of external contributor" size={10}
-                       fn={data(ctrl.contributor.name)} />
+                       fn={bindString(ctrl.contributor.name)} />
               : <input class={PLAINTEXT_CLASS} aria-label="Name of YouTrack user"
                        readOnly value={ctrl.name()} />
           }
@@ -33,7 +33,7 @@ export function ContributorView({ctrl}: {ctrl: ContributorCtrl}): HTMLElement {
           <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
             <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS}
               aria-label="Number of persons" style={{width: INPUT_WIDTH_3_DIGITS}}
-              fn={data(ctrl.contributor.numMembers)} />
+              fn={bindNumber(ctrl.contributor.numMembers)} />
             <div class="input-group-append">
               <span class="input-group-text">👤</span>
             </div>
@@ -42,7 +42,7 @@ export function ContributorView({ctrl}: {ctrl: ContributorCtrl}): HTMLElement {
         <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
           <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK}
                  aria-label="Hours per week per person" style={{width: INPUT_WIDTH_3_DIGITS}}
-                 fn={data(ctrl.contributor.hoursPerWeek)} />
+                 fn={bindNumber(ctrl.contributor.hoursPerWeek)} />
           <div class="input-group-append">
             <span class="input-group-text">h/week</span>
           </div>

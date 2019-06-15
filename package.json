@@ -1,6 +1,6 @@
 {
   "name": "@fschopp/project-planning-ui-for-you-track",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "User-interface for fschopp/project-planning-for-you-track. Allows easy embedding of arbitrary widgets (for instance, a Gantt chart) in order to visualize project schedules created from YouTrack saved searches.",
   "keywords": [
     "Gantt",
@@ -52,8 +52,7 @@
     "s-array": "^0.4.10",
     "s-js": "^0.4.9",
     "sortablejs": "^1.9.0",
-    "surplus": "^0.5.3",
-    "surplus-mixin-data": "^0.5.0"
+    "surplus": "^0.5.3"
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
@@ -77,8 +76,7 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "**/src/main/*.ts?(x)",
-      "**/src/main/utils/**/*.ts?(x)"
+      "**/src/main/**/*.ts"
     ],
     "coverageDirectory": "target/coverage",
     "testMatch": [

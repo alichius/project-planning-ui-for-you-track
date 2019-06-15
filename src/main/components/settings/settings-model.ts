@@ -1,6 +1,6 @@
 import { SDataArray } from 's-array';
 import S, { DataSignal } from 's-js';
-import { jsonable, Plain } from '../../utils/s';
+import { jsonable, Plain, toPlain } from '../../utils/s';
 import { Contributor } from '../contributor/contributor-model';
 import { assignContributors, createContributors } from '../contributors/contributors-model';
 
@@ -74,4 +74,39 @@ export function assignSettings(settings: Settings, plain: Plain<Settings>): void
     settings.overlaySavedQuery(plain.overlaySavedQuery);
     assignContributors(settings.contributors, plain.contributors);
   });
+}
+
+/**
+ * Creates a new normalized plain JSON value for the given settings.
+ *
+ * Normalization means that the YouTrack base URL is the result of {@link normalizedBaseUrl}().
+ */
+export function toNormalizedPlainSettings(settings: Settings): Plain<Settings> {
+  const plainSettings = toPlain(settings);
+  return {
+    ...plainSettings,
+    youTrackBaseUrl: normalizedBaseUrl(plainSettings.youTrackBaseUrl),
+  };
+}
+
+/**
+ * Returns the normalized YouTrack base URL.
+ *
+ * Normalization means returning a syntactically valid URL that ends with a slash (/).
+ *
+ * @return the normalized URL, or the empty string if the given URL is not valid
+ */
+export function normalizedBaseUrl(baseUrl: string): string {
+  try {
+    const url = new URL(baseUrl);
+    if (url.pathname.length === 0 || url.pathname.charAt(url.pathname.length - 1) !== '/') {
+      url.pathname = url.pathname.concat('/');
+    }
+    return url.toString();
+  } catch (exception) {
+    if (!(exception instanceof TypeError)) {
+      throw exception;
+    }
+    return '';
+  }
 }

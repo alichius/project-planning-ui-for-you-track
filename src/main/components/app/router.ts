@@ -42,12 +42,20 @@ function parseWindowLocation(): Hash {
 export class Router {
   private hash: DataSignal<Hash> = S.value(parseWindowLocation());
 
+  public static create<T extends App>(app: T, assignSavedState: (plain: Plain<T>) => any) {
+    const savedState: Plain<T> | undefined = handlePotentialOauthRedirect<Plain<T>>();
+    if (savedState !== undefined) {
+      assignSavedState(savedState);
+    }
+    return new Router(app);
+  }
+
   /**
    * Constructor.
    *
    * @param app the non-transient application state
    */
-  constructor(app: App) {
+  private constructor(app: App) {
     const savedState: Plain<App> | undefined = handlePotentialOauthRedirect<Plain<App>>();
     if (savedState !== undefined) {
       assignApp(app, savedState);

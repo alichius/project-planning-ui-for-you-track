@@ -30,9 +30,74 @@ export function sortableBindSarray<T>(sArray: SDataArray<T>, sortableOptions?: {
 }
 
 /**
- * Two-way binds the given data signal with the given 'multiple' <select> element (note the currying).
+ * Two-way binds the given `number` data signal with the given `<input>` element (note the currying).
  */
-export function multiData(signal: DataSignal<Set<string>>): (element: HTMLSelectElement) => void {
+export function bindNumber(signal: DataSignal<number>): (element: HTMLInputElement) => void {
+  return (element) => {
+    S(() => element.valueAsNumber = signal());
+
+    const event = 'input';
+    element.addEventListener(event, valueListener, false);
+    S.cleanup(() => element.removeEventListener(event, valueListener));
+
+    function valueListener() {
+      const current: number = S.sample(signal);
+      const updated: number = element.valueAsNumber;
+      if (current !== updated) {
+        signal(updated);
+      }
+      return true;
+    }
+  };
+}
+
+/**
+ * Two-way binds the given `string` data signal with the given `<input>` element (note the currying).
+ */
+export function bindString(signal: DataSignal<string>): (element: HTMLInputElement | HTMLSelectElement) => void {
+  return (element) => {
+    S(() => element.value = signal());
+
+    const event = 'input';
+    element.addEventListener(event, valueListener, false);
+    S.cleanup(() => element.removeEventListener(event, valueListener));
+
+    function valueListener(): boolean {
+      const current: string = S.sample(signal);
+      const updated: string = element.value;
+      if (current !== updated) {
+        signal(updated);
+      }
+      return true;
+    }
+  };
+}
+
+/**
+ * Two-way binds the given data signal with the given `input` element (note the currying): The element is checked if
+ * and only if the data signal has the given “on”-value.
+ */
+export function bindToOnValue<T>(signal: DataSignal<T>, onValue: T): (element: HTMLInputElement) => void {
+  return (element) => {
+    S(() => element.checked = signal() === onValue);
+
+    const event = 'change';
+    element.addEventListener(event, radioListener, false);
+    S.cleanup(() => element.removeEventListener(event, radioListener));
+
+    function radioListener(): boolean {
+      if (element.checked) {
+        signal(onValue);
+      }
+      return true;
+    }
+  };
+}
+
+/**
+ * Two-way binds the given data signal with the given 'multiple' `<select>` element (note the currying).
+ */
+export function bindStringSet(signal: DataSignal<Set<string>>): (element: HTMLSelectElement) => void {
   return (element) => {
     S(() => {
       const activeOptions: Set<string> = signal();
@@ -44,7 +109,7 @@ export function multiData(signal: DataSignal<Set<string>>): (element: HTMLSelect
     element.addEventListener(event, valueListener, false);
     S.cleanup(() => element.removeEventListener(event, valueListener));
 
-    function valueListener() {
+    function valueListener(): boolean {
       const current: Set<string> = S.sample(signal);
       const updated: Set<string> = toSet();
       if (!setEquals(current, updated)) {

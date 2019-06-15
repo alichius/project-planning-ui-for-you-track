@@ -4,4 +4,4 @@
 import './project-planning-ui-for-you-track.css';
 
 // ...and source code.
-import '../../target/main/index.js';
+export * from '../../target/main/index.js';

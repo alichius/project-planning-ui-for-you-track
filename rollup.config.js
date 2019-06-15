@@ -18,8 +18,7 @@ function defaults() {
       's-array',
       's-js',
       'sortablejs',
-      'surplus',
-      'surplus-mixin-data'
+      'surplus'
     ],
     input: 'target/main/index.js',
 
@@ -37,8 +36,7 @@ function outputDefaults() {
       's-array': 'SArray',
       's-js': 'S',
       'sortablejs': 'Sortable',
-      'surplus': 'Surplus',
-      'surplus-mixin-data': 'SurplusDataMixin',
+      'surplus': 'Surplus'
     },
   };
 }

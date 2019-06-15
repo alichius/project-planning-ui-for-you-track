@@ -14,4 +14,10 @@ export * from './components/settings/settings-view';
 
 export * from './components/warnings/warnings-view';
 
+export * from './components/you-track/you-track-model';
+
+export * from './utils/s';
 export * from './utils/surplus';
+
+import * as YouTrackRest from './youtrack-rest';
+export { YouTrackRest };

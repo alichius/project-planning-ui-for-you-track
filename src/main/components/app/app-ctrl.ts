@@ -1,21 +1,26 @@
-import * as ProjectPlanningForYouTrack from '@fschopp/project-planning-for-you-track';
 import {
+  appendSchedule,
+  Contributor,
   Failure,
   goToOauthPage,
   isFailure,
   ProjectPlan,
+  reconstructProjectPlan,
+  Schedule,
+  scheduleUnresolved,
   SchedulingOptions,
   YouTrackConfig,
+  YouTrackIssue,
 } from '@fschopp/project-planning-for-you-track';
 import { strict as assert } from 'assert';
 import S, { DataSignal } from 's-js';
 import { deepEquals } from '../../utils/deep-equals';
-import { Plain, toPlain } from '../../utils/s';
+import { Plain } from '../../utils/s';
 import { unreachableCase } from '../../utils/typescript';
 import { AlertsCtrl } from '../alerts/alerts-ctrl';
 import { ContributorKind } from '../contributor/contributor-model';
 import { SettingsCtrl } from '../settings/settings-ctrl';
-import { Settings } from '../settings/settings-model';
+import { Settings, toNormalizedPlainSettings } from '../settings/settings-model';
 import { YouTrackCtrl } from '../you-track/you-track-ctrl';
 import { YouTrackMetadata } from '../you-track/you-track-model';
 import { App } from './app-model';
@@ -54,18 +59,45 @@ export enum Action {
 }
 
 /**
+ * Project plan together the settings used to compute it.
+ */
+export interface ExtendedProjectPlan {
+  /**
+   * The project plan.
+   */
+  plan: ProjectPlan;
+
+  /**
+   * The settings from the user interface.
+   */
+  settings: Plain<Settings>;
+
+  /**
+   * Time when the YouTrack activity log had been completely received and processed.
+   */
+  youTrackTimestamp: number;
+
+  /**
+   * Mapping from contributor IDs in {@link plan} to the real name ({@link ExternalContributor.name}).
+   *
+   * This map only includes IDs for external contributors. IDs not in this map are YouTrack user IDs.
+   */
+  idToExternalContributorName: Map<string, string>;
+}
+
+/**
  * Controller for {@link App}.
  */
 export class AppCtrl {
   /**
-   * The settings controller.
-   */
-  public readonly settingsCtrl: SettingsCtrl;
-
-  /**
    * Signal carrying the kind of action triggered by the button in the nav bar.
    */
   public readonly action: () => Action;
+
+  /**
+   * Signal carrying the last YouTrack metadata.
+   */
+  public readonly youTrackMetadata: () => YouTrackMetadata | undefined;
 
   /**
    * Signal carrying the progress of the current action, or undefined if there is no current action.
@@ -73,20 +105,27 @@ export class AppCtrl {
   public readonly progress: () => number | undefined;
 
   /**
-   * Signal carrying the latest project plan, or undefined if no project plan was computed yet.
+   * Signal carrying the latest project plan and the settings used to compute it, or undefined if no project plan was
+   * computed yet.
+   *
+   * The settings are the result of {@link toNormalizedPlainSettings}(); that is, they are normalized.
    */
-  public readonly projectPlan: () => ProjectPlanningForYouTrack.ProjectPlan | undefined;
+  public readonly extendedProjectPlan: () => ExtendedProjectPlan | undefined;
+
+  /**
+   * The settings controller.
+   */
+  public readonly settingsCtrl: SettingsCtrl;
 
   /**
    * The alert controller for displaying alerts to the user.
    */
   public readonly alertCtrl = new AlertsCtrl();
 
-  private readonly lastConfig: DataSignal<Plain<Settings> | undefined> = S.value(undefined);
   private readonly progress_: DataSignal<number | undefined> = S.value(undefined);
-  private readonly projectPlan_: DataSignal<ProjectPlanningForYouTrack.ProjectPlan | undefined> = S.value(undefined);
+  private readonly extendedProjectPlan_: DataSignal<ExtendedProjectPlan | undefined> = S.value(undefined);
   private reconstructProjectPlanTimestamp: number | undefined;
-  private reconstructProjectPlanResult: ProjectPlanningForYouTrack.ProjectPlan | undefined;
+  private reconstructProjectPlanResult: ProjectPlan | undefined;
   private readonly connectSignal_: DataSignal<null> = S.data(null);
   private readonly youTrackCtrl_: YouTrackCtrl;
   private readonly youTrackMetadata_: DataSignal<YouTrackMetadata | undefined> = S.value(undefined);
@@ -104,38 +143,12 @@ export class AppCtrl {
     this.settingsCtrl = new SettingsCtrl(this.app.settings, this.youTrackMetadata_, this.connectSignal_);
     this.youTrackCtrl_ = new YouTrackCtrl(this.youTrackMetadata_, this.settingsCtrl.verifiedBaseUrl, this.alertCtrl);
 
-    this.action = S(() => {
-      const progress: number | undefined = this.progress_();
-      const pendingMetadata: boolean = this.youTrackCtrl_.pendingMetadata();
-      const youTrackMetadata: YouTrackMetadata | undefined = this.youTrackMetadata_();
-      const lastConfig: Plain<Settings> | undefined = this.lastConfig();
-
-      if (progress !== undefined || pendingMetadata) {
-        return Action.STOP;
-      } else if (youTrackMetadata === undefined) {
-        return Action.CONNECT;
-      } else if (lastConfig === undefined) {
-        return Action.BUILD_PLAN;
-      }
-
-      const currentConfig: Plain<Settings> = toPlain(this.app.settings);
-      const newWithoutContributors = {...currentConfig};
-      const lastWithoutContributors = {...lastConfig};
-      delete newWithoutContributors.contributors;
-      delete lastWithoutContributors.contributors;
-      const youTrackConfigChanged = !deepEquals(newWithoutContributors, lastWithoutContributors);
-      const contributorsChanged = !deepEquals(currentConfig.contributors, lastConfig.contributors);
-
-      if (youTrackConfigChanged) {
-        return Action.BUILD_PLAN;
-      } else if (contributorsChanged) {
-        return Action.UPDATE_PREDICTION;
-      } else {
-        return Action.NOTHING;
-      }
-    });
+    this.action = S(() => actionFromState(
+        this.progress_(), this.youTrackCtrl_.pendingMetadata(), this.youTrackMetadata_(),
+        this.extendedProjectPlan_(), toNormalizedPlainSettings(this.app.settings)));
+    this.youTrackMetadata = this.youTrackMetadata_;
     this.progress = this.progress_;
-    this.projectPlan = this.projectPlan_;
+    this.extendedProjectPlan = this.extendedProjectPlan_;
 
     // 'seed' is undefined (the calculation does not keep a state), and 'onchanges' is true (skip the initial run).
     S.on(this.connectSignal_, () => this.connect(), undefined, true);
@@ -173,7 +186,8 @@ export class AppCtrl {
     goToOauthPage(this.settingsCtrl.verifiedBaseUrl(), this.settingsCtrl.settings.youTrackServiceId(), this.app);
   }
 
-  private async buildPlan(currentConfig: Plain<Settings> = toPlain(this.app.settings)): Promise<void> {
+  private async buildPlan(currentConfig: Plain<Settings> = toNormalizedPlainSettings(this.app.settings)):
+      Promise<void> {
     const typeFieldId = currentConfig.typeFieldId;
     const splittableTypeIds = new Set<string>(currentConfig.splittableTypeIds);
     const youTrackConfig: YouTrackConfig = {
@@ -190,22 +204,24 @@ export class AppCtrl {
       minStateChangeDurationMs: MIN_STATE_CHANGE_DURATION_MS,
       defaultRemainingEffortMs: DEFAULT_REMAINING_EFFORT_MS,
       defaultWaitTimeMs: DEFAULT_WAIT_TIME_MS,
-      isSplittableFn: (issue: ProjectPlanningForYouTrack.YouTrackIssue) => {
+      isSplittableFn: (issue: YouTrackIssue) => {
         const value: string | undefined = issue.customFields[typeFieldId];
         return splittableTypeIds.has(value);
       },
     };
-    this.reconstructProjectPlanResult = await ProjectPlanningForYouTrack.reconstructProjectPlan(
+    this.reconstructProjectPlanResult = await reconstructProjectPlan(
         this.settingsCtrl.verifiedBaseUrl(), youTrackConfig, (percentDone) => this.progress_(percentDone));
     this.reconstructProjectPlanTimestamp = Date.now();
     await this.updatePrediction(currentConfig);
   }
 
-  private async updatePrediction(currentConfig: Plain<Settings> = toPlain(this.app.settings)): Promise<void> {
+  private async updatePrediction(currentConfig: Plain<Settings> = toNormalizedPlainSettings(this.app.settings)):
+      Promise<void> {
     const youTrackMetadata: YouTrackMetadata | undefined = this.youTrackMetadata_();
-    assert(this.reconstructProjectPlanResult !== undefined && youTrackMetadata !== undefined);
+    assert(this.reconstructProjectPlanResult !== undefined && youTrackMetadata !== undefined &&
+        this.reconstructProjectPlanTimestamp !== undefined);
 
-    const contributors: ProjectPlanningForYouTrack.Contributor[] = [];
+    const contributors: Contributor[] = [];
     const idToExternalContributorName = new Map<string, string>();
     for (const contributor of currentConfig.contributors) {
       let id: string;
@@ -231,15 +247,46 @@ export class AppCtrl {
       minActivityDuration: MIN_ACTIVITY_DURATION,
       predictionStartTimeMs: this.reconstructProjectPlanTimestamp,
     };
-    const schedule: ProjectPlanningForYouTrack.Schedule = await ProjectPlanningForYouTrack.scheduleUnresolved(
+    const schedule: Schedule = await scheduleUnresolved(
         this.reconstructProjectPlanResult!.issues, schedulingOptions);
-    const finalPlan: ProjectPlan | Failure = ProjectPlanningForYouTrack.appendSchedule(
+    const finalPlan: ProjectPlan | Failure = appendSchedule(
         this.reconstructProjectPlanResult!, schedule, schedulingOptions.predictionStartTimeMs!);
     if (isFailure(finalPlan)) {
       throw finalPlan;
     } else {
-      this.lastConfig(currentConfig);
-      this.projectPlan_(finalPlan);
+      this.extendedProjectPlan_({
+        plan: finalPlan,
+        settings: currentConfig,
+        youTrackTimestamp: this.reconstructProjectPlanTimestamp!,
+        idToExternalContributorName,
+      });
     }
+  }
+}
+
+function actionFromState(progress: number | undefined, pendingMetadata: boolean,
+    youTrackMetadata: YouTrackMetadata | undefined, extendedProjectPlan: ExtendedProjectPlan | undefined,
+    currentSettings: Plain<Settings>): Action {
+  if (progress !== undefined || pendingMetadata) {
+    return Action.STOP;
+  } else if (youTrackMetadata === undefined) {
+    return Action.CONNECT;
+  } else if (extendedProjectPlan === undefined) {
+    return Action.BUILD_PLAN;
+  }
+
+  const newWithoutContributors = {...currentSettings};
+  const lastWithoutContributors = {...extendedProjectPlan.settings};
+  delete newWithoutContributors.contributors;
+  delete lastWithoutContributors.contributors;
+  const youTrackConfigChanged = !deepEquals(newWithoutContributors, lastWithoutContributors);
+  const contributorsChanged = !deepEquals(currentSettings.contributors, extendedProjectPlan.settings.contributors);
+
+  if (youTrackConfigChanged) {
+    return Action.BUILD_PLAN;
+  } else if (contributorsChanged) {
+    return Action.UPDATE_PREDICTION;
+  } else {
+    return Action.NOTHING;
   }
 }

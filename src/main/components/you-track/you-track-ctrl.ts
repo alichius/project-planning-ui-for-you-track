@@ -55,7 +55,8 @@ export class YouTrackCtrl {
 
 async function loadCustomFields(baseUrl: string): Promise<CustomField[]> {
   const queryParams = {
-    fields: 'fieldDefaults(bundle(id,values(id,name,isResolved,ordinal))),fieldType(id),id,name',
+    fields: 'fieldDefaults(bundle(id,values(color(background,foreground),id,isResolved,name,ordinal))),' +
+        'fieldType(id),id,name',
   };
   return await httpGet<CustomField[]>(baseUrl, YouTrackRestUrl.CUSTOM_FIELDS, queryParams);
 }

@@ -1,21 +1,25 @@
 import { IssueActivity, ProjectPlan, YouTrackIssue } from '@fschopp/project-planning-for-you-track';
 import S from 's-js';
-import { App, AppCtrl, createApp, Router } from '../main';
+import { AppCtrl, Plain, Router } from '../main';
+import { assignDemoApp, createDemoApp, DemoApp } from './demo-model';
 import { DemoView } from './demo-view';
 
 export class DemoCtrl {
   public readonly jsonProjectPlan: () => string;
+  public readonly appCtrl: AppCtrl;
 
   constructor(
-      public readonly appCtrl: AppCtrl
+      public readonly demoApp: DemoApp
   ) {
+    this.appCtrl = new AppCtrl(demoApp);
     this.jsonProjectPlan = S(() => {
-      const currentProjectPlan = appCtrl.projectPlan();
-      if (currentProjectPlan === undefined) {
+      const extendedProjectPlan = this.appCtrl.extendedProjectPlan();
+      if (extendedProjectPlan === undefined) {
         return '';
       }
+      const projectPlan: ProjectPlan = extendedProjectPlan.plan;
       // OK in demo to deep clone like this
-      const clonedProjectPlan: ProjectPlan = JSON.parse(JSON.stringify(currentProjectPlan));
+      const clonedProjectPlan: ProjectPlan = JSON.parse(JSON.stringify(projectPlan));
       humanReadableTimestamps(clonedProjectPlan);
       return JSON.stringify(clonedProjectPlan, undefined, 2);
     });
@@ -44,9 +48,8 @@ function humanReadableTimestamps(projectPlan: ProjectPlan): void {
 }
 
 S.root(() => {
-  const app: App = createApp();
-  new Router(app);
-  const appCtrl = new AppCtrl(app);
-  const demoCtrl = new DemoCtrl(appCtrl);
-  document.body.append(...DemoView({ctrl: demoCtrl}).children);
+  const demoApp: DemoApp = createDemoApp();
+  Router.create(demoApp, (plain: Plain<DemoApp>) => assignDemoApp(demoApp, plain));
+  const demoCtrl = new DemoCtrl(demoApp);
+  document.body.append(...DemoView({ctrl: demoCtrl}));
 });
