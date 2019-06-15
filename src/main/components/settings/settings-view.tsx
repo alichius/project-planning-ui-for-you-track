@@ -304,16 +304,16 @@ export function SettingsView({ctrl}: {ctrl: SettingsCtrl}): HTMLElement {
         <label for="savedQuery" class={LABEL_CLASS}>Saved Query:</label>
         <div class={EDIT_AREA_CLASS}>
           <select id="savedQuery" class={SELECT_CLASS} aria-describedby="savedQueryHelp"
-                  fn={bindString(ctrl.settings.savedQuery)}>
+                  fn={bindString(ctrl.settings.savedQueryId)}>
             <SinglePlaceholder defaultPlaceholder="None selected"
                                unknownIdPlaceholder={(unknownId) => `Unknown (ID: ${unknownId})`}
-                               selectedId={ctrl.settings.savedQuery()}
+                               selectedId={ctrl.settings.savedQueryId()}
                                choices={ctrl.savedQueryIds()}>
-              <option value={ctrl.settings.savedQuery()} selected disabled />
+              <option value={ctrl.settings.savedQueryId()} selected disabled />
             </SinglePlaceholder>
             {ctrl.metadata().savedSearches.map((savedSearch) =>
                 <option value={savedSearch.id}
-                        selected={savedSearch.id === S.sample(ctrl.settings.savedQuery)}>
+                        selected={savedSearch.id === S.sample(ctrl.settings.savedQueryId)}>
                   {savedSearch.name} ({savedSearch.owner.fullName})
                 </option>
             )}
@@ -328,17 +328,17 @@ export function SettingsView({ctrl}: {ctrl: SettingsCtrl}): HTMLElement {
         <label for="overlaySavedQuery" class={LABEL_CLASS}>Overlay:</label>
         <div class={EDIT_AREA_CLASS}>
           <select id="overlaySavedQuery" class={SELECT_CLASS}  aria-describedby="overlaySavedQueryHelp"
-                  fn={bindString(ctrl.settings.overlaySavedQuery)}>
+                  fn={bindString(ctrl.settings.overlaySavedQueryId)}>
             <option value="">None</option>
             <SinglePlaceholder unknownIdPlaceholder={(unknownId) => `Unknown (ID: ${unknownId})`}
-                               selectedId={ctrl.settings.overlaySavedQuery()}
+                               selectedId={ctrl.settings.overlaySavedQueryId()}
                                choices={ctrl.savedQueryIds()}>
-              <option value={ctrl.settings.overlaySavedQuery()} selected disabled />
+              <option value={ctrl.settings.overlaySavedQueryId()} selected disabled />
             </SinglePlaceholder>
             {ctrl.metadata().savedSearches.map((overlaySavedQuery) =>
                 <option value={overlaySavedQuery.id}
-                        selected={overlaySavedQuery.id === S.sample(ctrl.settings.overlaySavedQuery)}
-                        disabled={overlaySavedQuery.id === ctrl.settings.savedQuery()}>
+                        selected={overlaySavedQuery.id === S.sample(ctrl.settings.overlaySavedQueryId)}
+                        disabled={overlaySavedQuery.id === ctrl.settings.savedQueryId()}>
                   {overlaySavedQuery.name} ({overlaySavedQuery.owner.fullName})
                 </option>
             )}

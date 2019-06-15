@@ -98,8 +98,8 @@ export class SettingsCtrl {
 
     // If saved search and overlay are the same, set the overlay to none.
     S(() => {
-      if (this.settings.savedQuery() === this.settings.overlaySavedQuery()) {
-        this.settings.overlaySavedQuery('');
+      if (this.settings.savedQueryId() === this.settings.overlaySavedQueryId()) {
+        this.settings.overlaySavedQueryId('');
       }
     });
   }

@@ -20,8 +20,8 @@ export interface Settings {
   readonly splittableTypeIds: DataSignal<Set<string>>;
   readonly dependsLinkTypeId: DataSignal<string>;
   readonly doesInwardDependOnOutward: DataSignal<boolean>;
-  readonly savedQuery: DataSignal<string>;
-  readonly overlaySavedQuery: DataSignal<string>;
+  readonly savedQueryId: DataSignal<string>;
+  readonly overlaySavedQueryId: DataSignal<string>;
   readonly contributors: SDataArray<Contributor>;
 }
 
@@ -42,8 +42,8 @@ export function createSettings(): Settings {
     splittableTypeIds: jsonable(S.value(new Set<string>())),
     dependsLinkTypeId: jsonable(S.value('')),
     doesInwardDependOnOutward: jsonable(S.value(true)),
-    savedQuery: jsonable(S.value('')),
-    overlaySavedQuery: jsonable(S.value('')),
+    savedQueryId: jsonable(S.value('')),
+    overlaySavedQueryId: jsonable(S.value('')),
     contributors: createContributors(),
   };
 }
@@ -70,8 +70,8 @@ export function assignSettings(settings: Settings, plain: Plain<Settings>): void
     settings.splittableTypeIds(new Set<string>(plain.splittableTypeIds));
     settings.dependsLinkTypeId(plain.dependsLinkTypeId);
     settings.doesInwardDependOnOutward(plain.doesInwardDependOnOutward);
-    settings.savedQuery(plain.savedQuery);
-    settings.overlaySavedQuery(plain.overlaySavedQuery);
+    settings.savedQueryId(plain.savedQueryId);
+    settings.overlaySavedQueryId(plain.overlaySavedQueryId);
     assignContributors(settings.contributors, plain.contributors);
   });
 }
