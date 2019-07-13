@@ -55,12 +55,18 @@ export function toPlain<T>(source: T): Plain<T> {
   }
 }
 
+/**
+ * Construct a type with the properties of T, but make those properties optional whose keys are in the union K.
+ */
+type MakeOptional<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Partial<Pick<T, K>>;
+
 // The following requires at least TypeScript 3.4. See: https://github.com/Microsoft/TypeScript/issues/24622
 type PlainHelper<T> =
     T extends SDataArray<infer U1> ? U1[] :
     T extends DataSignal<infer U2> ? U2 :
     T extends Set<infer U3> ? U3[] :
-    T extends ({[P in keyof T]: T[P]} & {transient: any}) ? {[P in Exclude<keyof T, 'transient'>]: PlainHelper<T[P]>} :
+    T extends ({[P in keyof T]: T[P]} & {transient: any}) ?
+        MakeOptional<{[P in keyof T]: PlainHelper<T[P]>}, 'transient'> :
     T extends {[P in keyof T]: T[P]} ? {[P in keyof T]: PlainHelper<T[P]>} :
     T;
 

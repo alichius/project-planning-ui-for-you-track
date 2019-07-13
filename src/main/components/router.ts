@@ -1,9 +1,9 @@
 import { handlePotentialOauthRedirect } from '@fschopp/project-planning-for-you-track';
 import { strict as assert } from 'assert';
 import S, { DataSignal } from 's-js';
-import { Plain } from '../../utils/s';
-import { assignSettings, Settings } from '../settings/settings-model';
-import { App, assignApp, Page } from './app-model';
+import { Plain } from '../utils/s';
+import { App, Page } from './app/app-model';
+import { Settings } from './settings/settings-model';
 
 const FABRICATED_HOST = 'http://ignored-host';
 
@@ -38,27 +38,26 @@ function parseWindowLocation(): Hash {
 /**
  * Router that two-way binds the fragment (also called hash) of the URI of the current window/tab and the application
  * state.
+ *
+ * @typeparam T Type of the application subclass.
+ * @typeparam U Type of of the user-provided state; that is, of {@link App.settings}.
  */
-export class Router {
+export class Router<T extends App<U>, U extends Settings = T['settings']> {
   private hash: DataSignal<Hash> = S.value(parseWindowLocation());
-
-  public static create<T extends App>(app: T, assignSavedState: (plain: Plain<T>) => any) {
-    const savedState: Plain<T> | undefined = handlePotentialOauthRedirect<Plain<T>>();
-    if (savedState !== undefined) {
-      assignSavedState(savedState);
-    }
-    return new Router(app);
-  }
 
   /**
    * Constructor.
    *
-   * @param app the non-transient application state
+   * @param app The user-provided application state.
+   * @param assignApp Function that updates the application state to the given values in a plain JSON object.
+   * @param assignApp.app plain JSON object
+   * @param assignSettings Function that updates the application settings to the given values in a plain JSON object.
+   * @param assignSettings.app plain JSON object
    */
-  private constructor(app: App) {
-    const savedState: Plain<App> | undefined = handlePotentialOauthRedirect<Plain<App>>();
+  public constructor(app: T, assignApp: (app: Plain<T>) => any, assignSettings: (settings: Plain<U>) => any) {
+    const savedState: Plain<T> | undefined = handlePotentialOauthRedirect<Plain<T>>();
     if (savedState !== undefined) {
-      assignApp(app, savedState);
+      assignApp(savedState);
     }
 
     // Bind hash to react to changes of window.location.hash
@@ -82,8 +81,8 @@ export class Router {
           app.currentPage(candidatePageName as Page);
         }
         if (currentHash.params.has('config')) {
-          const config: Plain<Settings> = JSON.parse(currentHash.params.get('config')!);
-          assignSettings(app.settings, config);
+          const config: Plain<U> = JSON.parse(currentHash.params.get('config')!);
+          assignSettings(config);
         } else {
           needsNormalization(null);
         }

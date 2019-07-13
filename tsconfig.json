@@ -38,15 +38,40 @@
 
     "src/main/components/app/app-ctrl.ts",
     "src/main/components/app/app-model.ts",
-    "src/main/components/app/router.ts",
+
+    "src/main/components/base-views.tsx",
+
+    "src/main/components/contributors/contributors-ctrl.ts",
+    "src/main/components/contributors/contributors-model.ts",
+    "src/main/components/contributors/contributors-view.tsx",
+
+    "src/main/components/depends-link-type/depends-link-type-model.ts",
+    "src/main/components/depends-link-type/depends-link-type-view.tsx",
 
     "src/main/components/nav/nav-view.tsx",
+
+    "src/main/components/project-planning-app/project-planning-app-ctrl.ts",
+    "src/main/components/project-planning-app/project-planning-app-model.ts",
+
+    "src/main/components/project-planning-app/project-planning-app-ctrl.ts",
+    "src/main/components/project-planning-app/project-planning-app-model.ts",
+
+    "src/main/components/project-planning-settings/project-planning-settings-ctrl.ts",
+    "src/main/components/project-planning-settings/project-planning-settings-model.ts",
+    "src/main/components/project-planning-settings/project-planning-settings-view.tsx",
+
+    "src/main/components/router.ts",
 
     "src/main/components/settings/settings-ctrl.ts",
     "src/main/components/settings/settings-model.ts",
     "src/main/components/settings/settings-view.tsx",
 
     "src/main/components/warnings/warnings-view.tsx",
+
+    "src/main/components/you-track-base-views.tsx",
+
+    "src/main/components/you-track-metadata/you-track-metadata-ctrl.ts",
+    "src/main/components/you-track-metadata/you-track-metadata-model.ts",
 
     "src/main/index.ts",
     "src/main/utils/surplus.ts",

@@ -1,19 +1,29 @@
 import { IssueActivity, ProjectPlan, YouTrackIssue } from '@fschopp/project-planning-for-you-track';
 import S from 's-js';
-import { AppCtrl, Plain, Router } from '../main';
+import {
+  assignProjectPlanningSettings,
+  createProjectPlanningAppComputation,
+  ProjectPlanningAppComputation,
+  ProjectPlanningAppCtrl,
+  Router,
+} from '../main';
 import { assignDemoApp, createDemoApp, DemoApp } from './demo-model';
 import { DemoView } from './demo-view';
 
 export class DemoCtrl {
   public readonly jsonProjectPlan: () => string;
-  public readonly appCtrl: AppCtrl;
 
-  constructor(
-      public readonly demoApp: DemoApp
+  public static createDefaultDemoCtrl(app: DemoApp, appComputation: ProjectPlanningAppComputation): DemoCtrl {
+    const projectPlanningAppCtrl: ProjectPlanningAppCtrl =
+      ProjectPlanningAppCtrl.createDefaultProjectPlanningAppCtrl(app, appComputation);
+    return new DemoCtrl(projectPlanningAppCtrl);
+  }
+
+  public constructor(
+      public readonly projectPlanningAppCtrl: ProjectPlanningAppCtrl
   ) {
-    this.appCtrl = new AppCtrl(demoApp);
     this.jsonProjectPlan = S(() => {
-      const extendedProjectPlan = this.appCtrl.extendedProjectPlan();
+      const extendedProjectPlan = projectPlanningAppCtrl.extendedProjectPlan();
       if (extendedProjectPlan === undefined) {
         return '';
       }
@@ -48,8 +58,18 @@ function humanReadableTimestamps(projectPlan: ProjectPlan): void {
 }
 
 S.root(() => {
-  const demoApp: DemoApp = createDemoApp();
-  Router.create(demoApp, (plain: Plain<DemoApp>) => assignDemoApp(demoApp, plain));
-  const demoCtrl = new DemoCtrl(demoApp);
-  document.body.append(...DemoView({ctrl: demoCtrl}));
+  // Create model
+  const app: DemoApp = createDemoApp();
+  const appComputation: ProjectPlanningAppComputation = createProjectPlanningAppComputation();
+
+  // Create controller
+  const ctrl = DemoCtrl.createDefaultDemoCtrl(app, appComputation);
+  new Router(
+      app,
+      (plainApp) => assignDemoApp(app, plainApp),
+      (plainSettings) => assignProjectPlanningSettings(app.settings, plainSettings)
+  );
+
+  // Create view
+  document.body.append(...DemoView({app, appComputation, ctrl}).children);
 });

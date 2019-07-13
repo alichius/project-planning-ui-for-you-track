@@ -1,21 +1,19 @@
 import { isFailure } from '@fschopp/project-planning-for-you-track';
-import { SArray, SDataArray } from 's-array';
-import { Alert, createAlerts } from './alerts-model';
+import { SDataArray } from 's-array';
+import { Alert } from './alerts-model';
 
 /**
  * Controller for the list of alerts.
  */
 export class AlertsCtrl {
   /**
-   * Array signal carrying the list of alerts currently shown.
+   * Constructor.
+   *
+   * @param alerts_ Array signal carrying the list of alerts currently shown.
    */
-  public readonly alerts: SArray<Alert>;
-
-  private readonly alerts_: SDataArray<Alert> = createAlerts();
-
-  constructor() {
-    this.alerts = this.alerts_;
-  }
+  public constructor(
+      private readonly alerts_: SDataArray<Alert>
+  ) { }
 
   /**
    * Adds a new alert that is to be shown to the user.

@@ -1,9 +1,10 @@
-User-interface for [fschopp/project-planning-for-you-track](https://github.com/fschopp/project-planning-for-you-track). Allows easy embedding of arbitrary widgets (for instance, a Gantt chart) in order to visualize project schedules created from [YouTrack saved searches](https://www.jetbrains.com/help/youtrack/standalone/Saved-Search.html).
+User-interface framework for configuring access to (and retrieving data from) YouTrack. Allows easy embedding of widgets such as a Gantt chart for visualizing project schedules created from [YouTrack saved searches](https://www.jetbrains.com/help/youtrack/standalone/Saved-Search.html).
 
 ## Status
 
 [![Build Status](https://travis-ci.org/fschopp/project-planning-ui-for-you-track.svg?branch=master)](https://travis-ci.org/fschopp/project-planning-ui-for-you-track)
 [![Coverage Status](https://coveralls.io/repos/github/fschopp/project-planning-ui-for-you-track/badge.svg?branch=master)](https://coveralls.io/github/fschopp/project-planning-ui-for-you-track?branch=master)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/fschopp/project-planning-ui-for-you-track.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/fschopp/project-planning-ui-for-you-track/context:javascript)
 [![npm](https://img.shields.io/npm/v/@fschopp/project-planning-ui-for-you-track.svg)](https://www.npmjs.com/package/@fschopp/project-planning-ui-for-you-track)
 
 ## Overview
@@ -35,7 +36,7 @@ Include the minified sources from the [jsDelivr CDN](https://www.jsdelivr.com/pa
 ```
 Of course, the two occurrences of `...` need to be replaced by the current version and its corresponding [subresource integrity (SRI)](https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity) hash.
 
-Note that you also need to add `<script>` elements for all (transitive) dependencies. See [package.json](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/package.json) for the dependency versions. You may also want to check the [Rollup configuration file](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/src/rollup.config.js) which lists the global symbols this package expects. Currently, the only indirect (that is, purely transitive) dependency is [fschopp/project-planning-js](https://github.com/fschopp/project-planning-js).
+Note that you also need to add `<script>` elements for all (transitive) dependencies. See [package.json](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/package.json) for the dependency versions. You may also want to check the [Rollup configuration file](https://github.com/fschopp/project-planning-ui-for-you-track/tree/master/rollup.config.js) which lists the global symbols this package expects. Currently, the only indirect (that is, purely transitive) dependency is [fschopp/project-planning-js](https://github.com/fschopp/project-planning-js).
 
 ## Build
 

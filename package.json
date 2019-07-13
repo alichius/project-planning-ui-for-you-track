@@ -35,7 +35,7 @@
     "lint": "tslint --format verbose --project .",
     "test": "jest",
     "test:coverage": "npm run test -- --collect-coverage",
-    "compile": "tsc && tsc -p src/scripts/ && node target/scripts/surplus-compiler.js target/demo/*.jsx target/main/components/*/*.jsx",
+    "compile": "tsc && tsc -p src/scripts/ && node target/scripts/surplus-compiler.js target/demo/*.jsx target/main/components/*.jsx target/main/components/*/*.jsx",
     "doc": "typedoc",
     "demo": "parcel serve --cache-dir target/parcel-cache --out-dir target/parcel --public-url /project-planning-ui-for-you-track/ src/demo/index.html",
     "demo:build": "parcel build --cache-dir target/parcel-cache --out-dir target/parcel --public-url /project-planning-ui-for-you-track/ src/demo/index.html",
@@ -48,31 +48,31 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#aa6d0767db87525004067aa464505f4eb78ec1a7",
+    "@fschopp/project-planning-for-you-track": "^0.9.2",
     "s-array": "^0.4.10",
     "s-js": "^0.4.9",
     "sortablejs": "^1.9.0",
     "surplus": "^0.5.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/preset-env": "^7.4.5",
-    "@types/jest": "^24.0.13",
+    "@babel/core": "^7.5.4",
+    "@babel/preset-env": "^7.5.4",
+    "@types/jest": "^24.0.15",
     "@types/sortablejs": "^1.7.2",
     "babel-plugin-unassert": "^3.0.1",
     "jest": "^24.8.0",
     "parcel-bundler": "^1.12.3",
     "postcss-import": "^12.0.1",
-    "rollup": "^1.14.6",
-    "rollup-plugin-babel": "^4.3.2",
+    "rollup": "^1.17.0",
+    "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-terser": "^5.0.0",
+    "rollup-plugin-terser": "^5.1.1",
     "source-map": "^0.7.3",
     "ts-jest": "^24.0.2",
-    "tslint": "^5.17.0",
-    "typedoc": "TypeStrong/typedoc#f781b20dda3dfafd453cf540f58fcd8cf4473316",
-    "typescript": "^3.5.1"
+    "tslint": "^5.18.0",
+    "typedoc": "TypeStrong/typedoc#e9b28ee2c336617687a968820515b6a37d44515f",
+    "typescript": "^3.5.3"
   },
   "jest": {
     "collectCoverageFrom": [

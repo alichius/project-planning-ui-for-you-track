@@ -1,8 +1,5 @@
-import { SDataArray } from 's-array';
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain, toPlain } from '../../utils/s';
-import { Contributor } from '../contributor/contributor-model';
-import { assignContributors, createContributors } from '../contributors/contributors-model';
 
 /**
  * Non-transient state of the settings UI component.
@@ -11,18 +8,6 @@ export interface Settings {
   readonly name: DataSignal<string>;
   readonly youTrackBaseUrl: DataSignal<string>;
   readonly youTrackServiceId: DataSignal<string>;
-  readonly stateFieldId: DataSignal<string>;
-  readonly inactiveStateIds: DataSignal<Set<string>>;
-  readonly remainingEffortFieldId: DataSignal<string>;
-  readonly remainingWaitFieldId: DataSignal<string>;
-  readonly assigneeFieldId: DataSignal<string>;
-  readonly typeFieldId: DataSignal<string>;
-  readonly splittableTypeIds: DataSignal<Set<string>>;
-  readonly dependsLinkTypeId: DataSignal<string>;
-  readonly doesInwardDependOnOutward: DataSignal<boolean>;
-  readonly savedQueryId: DataSignal<string>;
-  readonly overlaySavedQueryId: DataSignal<string>;
-  readonly contributors: SDataArray<Contributor>;
 }
 
 /**
@@ -33,18 +18,6 @@ export function createSettings(): Settings {
     name: jsonable(S.value('')),
     youTrackBaseUrl: jsonable(S.value('')),
     youTrackServiceId: jsonable(S.value('')),
-    stateFieldId: jsonable(S.value('')),
-    inactiveStateIds: jsonable(S.value(new Set<string>())),
-    remainingEffortFieldId: jsonable(S.value('')),
-    remainingWaitFieldId: jsonable(S.value('')),
-    assigneeFieldId: jsonable(S.value('')),
-    typeFieldId: jsonable(S.value('')),
-    splittableTypeIds: jsonable(S.value(new Set<string>())),
-    dependsLinkTypeId: jsonable(S.value('')),
-    doesInwardDependOnOutward: jsonable(S.value(true)),
-    savedQueryId: jsonable(S.value('')),
-    overlaySavedQueryId: jsonable(S.value('')),
-    contributors: createContributors(),
   };
 }
 
@@ -61,18 +34,6 @@ export function assignSettings(settings: Settings, plain: Plain<Settings>): void
     settings.name(plain.name);
     settings.youTrackBaseUrl(plain.youTrackBaseUrl);
     settings.youTrackServiceId(plain.youTrackServiceId);
-    settings.stateFieldId(plain.stateFieldId);
-    settings.inactiveStateIds(new Set<string>(plain.inactiveStateIds));
-    settings.remainingEffortFieldId(plain.remainingEffortFieldId);
-    settings.remainingWaitFieldId(plain.remainingWaitFieldId);
-    settings.assigneeFieldId(plain.assigneeFieldId);
-    settings.typeFieldId(plain.typeFieldId);
-    settings.splittableTypeIds(new Set<string>(plain.splittableTypeIds));
-    settings.dependsLinkTypeId(plain.dependsLinkTypeId);
-    settings.doesInwardDependOnOutward(plain.doesInwardDependOnOutward);
-    settings.savedQueryId(plain.savedQueryId);
-    settings.overlaySavedQueryId(plain.overlaySavedQueryId);
-    assignContributors(settings.contributors, plain.contributors);
   });
 }
 
@@ -81,7 +42,7 @@ export function assignSettings(settings: Settings, plain: Plain<Settings>): void
  *
  * Normalization means that the YouTrack base URL is the result of {@link normalizedBaseUrl}().
  */
-export function toNormalizedPlainSettings(settings: Settings): Plain<Settings> {
+export function toNormalizedPlainSettings<T extends Settings>(settings: T): Plain<T> {
   const plainSettings = toPlain(settings);
   return {
     ...plainSettings,
