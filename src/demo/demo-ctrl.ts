@@ -56,20 +56,3 @@ function humanReadableTimestamps(projectPlan: ProjectPlan): void {
     }
   }
 }
-
-S.root(() => {
-  // Create model
-  const app: DemoApp = createDemoApp();
-  const appComputation: ProjectPlanningAppComputation = createProjectPlanningAppComputation();
-
-  // Create controller
-  const ctrl = DemoCtrl.createDefaultDemoCtrl(app, appComputation);
-  new Router(
-      app,
-      (plainApp) => assignDemoApp(app, plainApp),
-      (plainSettings) => assignProjectPlanningSettings(app.settings, plainSettings)
-  );
-
-  // Create view
-  document.body.append(...DemoView({app, appComputation, ctrl}).children);
-});

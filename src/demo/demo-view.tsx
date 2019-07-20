@@ -27,7 +27,7 @@ export function DemoView({app, appComputation, ctrl}: DemoProperties): HTMLEleme
         <main role="main" class="position-relative overflow-hidden flex-shrink-1 flex-grow-1 border-top border-bottom">
           <div class="overflow-hidden position-absolute fill-parent d-flex flex-column"
                fn={withClassIff(() => app.currentPage() !== Page.HOME, 'invisible')}>
-            <div class="d-flex align-items-center border-bottom px-3 py-2">
+            <div class="d-flex align-items-center border-bottom px-3 py-2 flex-shrink-0 flex-grow-0">
               <label for="zoom" class="mb-0">🔍</label>
               <input class="custom-range ml-2" type="range" id="zoom" min="0" max="425" step="1"
                      fn={bindNumber(app.zoom)}/>
