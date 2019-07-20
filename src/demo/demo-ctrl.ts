@@ -1,14 +1,7 @@
 import { IssueActivity, ProjectPlan, YouTrackIssue } from '@fschopp/project-planning-for-you-track';
 import S from 's-js';
-import {
-  assignProjectPlanningSettings,
-  createProjectPlanningAppComputation,
-  ProjectPlanningAppComputation,
-  ProjectPlanningAppCtrl,
-  Router,
-} from '../main';
-import { assignDemoApp, createDemoApp, DemoApp } from './demo-model';
-import { DemoView } from './demo-view';
+import { ProjectPlanningAppComputation, ProjectPlanningAppCtrl } from '../main';
+import { DemoApp } from './demo-model';
 
 export class DemoCtrl {
   public readonly jsonProjectPlan: () => string;
