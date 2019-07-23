@@ -1,6 +1,9 @@
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain } from '../../utils/s';
-import { unreachableCase } from '../../utils/typescript';
+import { ensureNumber, ensureString, unreachableCase } from '../../utils/typescript';
+
+export const DEFAULT_HOURS_PER_WEEK = 40;
+export const DEFAULT_NUM_MEMBERS = 1;
 
 export type Contributor = YouTrackContributor | ExternalContributor;
 
@@ -12,6 +15,17 @@ export interface ContributorBase {
 export const enum ContributorKind {
   YOU_TRACK,
   EXTERNAL,
+}
+
+/**
+ * Returns the given value if it is of type {@link ContributorKind}, or otherwise the given default value.
+ */
+function ensureContributorKind(value: ContributorKind,
+    defaultValue: ContributorKind = ContributorKind.YOU_TRACK): ContributorKind {
+  switch (value) {
+    case ContributorKind.EXTERNAL: case ContributorKind.YOU_TRACK: return value;
+    default: return defaultValue;
+  }
 }
 
 export interface ExternalContributor extends ContributorBase {
@@ -26,37 +40,48 @@ export interface YouTrackContributor extends ContributorBase {
 }
 
 
+/**
+ * Returns a newly created {@link Contributor} object with the values from the given plain JSON object.
+ *
+ * @param plain Plain JSON object. This function cannot rely on static type checking, because the data may be user
+ *     input.
+ */
 export function createContributor(plain: Plain<Contributor>): Contributor {
-  switch (plain.type) {
+  // Type cast is necessary, because TypeScript cannot know that ensureContributorKind is the identity function (for
+  // well-formed input).
+  const plainCopy: Plain<Contributor> = {
+    ...plain,
+    type: ensureContributorKind(plain.type),
+  } as Plain<Contributor>;
+  switch (plainCopy.type) {
     case ContributorKind.YOU_TRACK:
-      return createYouTrackContributor(plain);
+      return createYouTrackContributor(plainCopy);
     case ContributorKind.EXTERNAL:
-      return createExternalContributor(plain);
+      return createExternalContributor(plainCopy);
     default:
-      return unreachableCase(plain);
+      return unreachableCase(plainCopy);
   }
 }
 
-export function createExternalContributor(plain: Plain<ExternalContributor>): ExternalContributor {
+function createExternalContributor(plain: Plain<ExternalContributor>): ExternalContributor {
   return {
     ...createContributorBase(plain),
     type: ContributorKind.EXTERNAL,
-    name: jsonable(S.value(plain.name)),
-    numMembers: jsonable(S.value(plain.numMembers)),
+    name: jsonable(S.value(ensureString(plain.name))),
+    numMembers: jsonable(S.value(ensureNumber(plain.numMembers, DEFAULT_NUM_MEMBERS))),
   };
 }
 
-export function createYouTrackContributor(plain: Plain<YouTrackContributor>): YouTrackContributor {
+function createYouTrackContributor(plain: Plain<YouTrackContributor>): YouTrackContributor {
   return {
     ...createContributorBase(plain),
     type: ContributorKind.YOU_TRACK,
-    id: plain.id,
+    id: ensureString(plain.id),
   };
 }
 
-function createContributorBase(plain: Plain<ContributorBase>): ContributorBase {
+function createContributorBase(plain: Plain<ContributorBase>): Pick<ContributorBase, 'hoursPerWeek'> {
   return {
-    type: plain.type,
-    hoursPerWeek: jsonable(S.value(plain.hoursPerWeek)),
+    hoursPerWeek: jsonable(S.value(ensureNumber(plain.hoursPerWeek, DEFAULT_HOURS_PER_WEEK))),
   };
 }

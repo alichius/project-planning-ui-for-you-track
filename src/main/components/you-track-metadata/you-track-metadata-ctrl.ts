@@ -5,10 +5,10 @@ import { AlertsCtrl } from '../alerts/alerts-ctrl';
 import { YouTrackMetadata } from './you-track-metadata-model';
 
 enum YouTrackRestUrl {
-  CUSTOM_FIELDS = 'youtrack/api/admin/customFieldSettings/customFields',
-  ISSUE_LINK_TYPES = 'youtrack/api/issueLinkTypes',
-  SAVED_QUERIES = 'youtrack/api/savedQueries',
-  USERS = 'youtrack/api/admin/users',
+  CUSTOM_FIELDS = 'api/admin/customFieldSettings/customFields',
+  ISSUE_LINK_TYPES = 'api/issueLinkTypes',
+  SAVED_QUERIES = 'api/savedQueries',
+  USERS = 'api/admin/users',
 }
 
 /**
@@ -44,7 +44,7 @@ export class YouTrackMetadataCtrl {
 
   public constructor(
       youTrackMetadata: DataSignal<YouTrackMetadata | undefined>,
-      verifiedBaseUrl: () => string,
+      normalizedBaseUrl: () => string,
       alertCtrl: AlertsCtrl
   ) {
     const pendingMetadata: DataSignal<boolean> = S.value(false);
@@ -52,7 +52,7 @@ export class YouTrackMetadataCtrl {
 
     this.definedYouTrackMetadata = S(() => {
       const currentYouTrackMetadata: YouTrackMetadata | undefined = youTrackMetadata();
-      return currentYouTrackMetadata !== undefined && verifiedBaseUrl() === currentYouTrackMetadata.baseUrl
+      return currentYouTrackMetadata !== undefined && normalizedBaseUrl() === currentYouTrackMetadata.baseUrl
           ? currentYouTrackMetadata
           : emptyYouTrackMetadata();
     });
@@ -71,7 +71,7 @@ export class YouTrackMetadataCtrl {
     );
 
     S(() => {
-      const currentBaseUrl: string = verifiedBaseUrl();
+      const currentBaseUrl: string = normalizedBaseUrl();
       const currentYouTrackMetadata: YouTrackMetadata | undefined = S.sample(youTrackMetadata);
       if (currentBaseUrl.length > 0 && !S.sample(pendingMetadata) && currentYouTrackMetadata === undefined &&
           authorizationFor(currentBaseUrl) !== undefined) {

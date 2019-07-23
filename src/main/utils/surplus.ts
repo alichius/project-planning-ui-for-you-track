@@ -34,19 +34,29 @@ export function sortableBindSarray<T>(sArray: SDataArray<T>, sortableOptions?: {
  */
 export function bindNumber(signal: DataSignal<number>): (element: HTMLInputElement) => void {
   return (element) => {
-    S(() => element.valueAsNumber = signal());
+    let currentlyUpdatingSignal = false;
+    S(() => {
+      const newValue: number = signal();
+      if (!currentlyUpdatingSignal) {
+        element.valueAsNumber = newValue;
+      }
+    });
 
     const event = 'input';
     element.addEventListener(event, valueListener, false);
     S.cleanup(() => element.removeEventListener(event, valueListener));
 
-    function valueListener() {
+    function valueListener(): void {
       const current: number = S.sample(signal);
       const updated: number = element.valueAsNumber;
       if (current !== updated) {
-        signal(updated);
+        currentlyUpdatingSignal = true;
+        try {
+          signal(updated);
+        } finally {
+          currentlyUpdatingSignal = false;
+        }
       }
-      return true;
     }
   };
 }
@@ -56,19 +66,34 @@ export function bindNumber(signal: DataSignal<number>): (element: HTMLInputEleme
  */
 export function bindString(signal: DataSignal<string>): (element: HTMLInputElement | HTMLSelectElement) => void {
   return (element) => {
-    S(() => element.value = signal());
+    let currentlyUpdatingSignal = false;
+    S(() => {
+      // Call signal() outside of if-block, so the dependency on the signal is never lost.
+      const newValue: string = signal();
+
+      // Don't set value as a response of an 'input' event. It doesn't just feel wrong, in Safari 12 (for example) it
+      // also moves the cursor to the end of the input field.
+      if (!currentlyUpdatingSignal) {
+        element.value = newValue;
+      }
+    });
 
     const event = 'input';
     element.addEventListener(event, valueListener, false);
     S.cleanup(() => element.removeEventListener(event, valueListener));
 
-    function valueListener(): boolean {
+    function valueListener(): void {
       const current: string = S.sample(signal);
       const updated: string = element.value;
       if (current !== updated) {
-        signal(updated);
+        currentlyUpdatingSignal = true;
+        // Try-block for defensive programming.
+        try {
+          signal(updated);
+        } finally {
+          currentlyUpdatingSignal = false;
+        }
       }
-      return true;
     }
   };
 }
@@ -79,17 +104,27 @@ export function bindString(signal: DataSignal<string>): (element: HTMLInputEleme
  */
 export function bindToOnValue<T>(signal: DataSignal<T>, onValue: T): (element: HTMLInputElement) => void {
   return (element) => {
-    S(() => element.checked = signal() === onValue);
+    let currentlyUpdatingSignal = false;
+    S(() => {
+      const newValue: T = signal();
+      if (!currentlyUpdatingSignal) {
+        element.checked = newValue === onValue;
+      }
+    });
 
     const event = 'change';
     element.addEventListener(event, radioListener, false);
     S.cleanup(() => element.removeEventListener(event, radioListener));
 
-    function radioListener(): boolean {
+    function radioListener(): void {
       if (element.checked) {
-        signal(onValue);
+        currentlyUpdatingSignal = true;
+        try {
+          signal(onValue);
+        } finally {
+          currentlyUpdatingSignal = false;
+        }
       }
-      return true;
     }
   };
 }
@@ -99,23 +134,30 @@ export function bindToOnValue<T>(signal: DataSignal<T>, onValue: T): (element: H
  */
 export function bindStringSet(signal: DataSignal<Set<string>>): (element: HTMLSelectElement) => void {
   return (element) => {
+    let currentlyUpdatingSignal = false;
     S(() => {
       const activeOptions: Set<string> = signal();
-      for (const option of element.options) {
-        option.selected = activeOptions.has(option.value);
+      if (!currentlyUpdatingSignal) {
+        for (const option of element.options) {
+          option.selected = activeOptions.has(option.value);
+        }
       }
     });
     const event = 'input';
     element.addEventListener(event, valueListener, false);
     S.cleanup(() => element.removeEventListener(event, valueListener));
 
-    function valueListener(): boolean {
+    function valueListener(): void {
       const current: Set<string> = S.sample(signal);
       const updated: Set<string> = toSet();
       if (!setEquals(current, updated)) {
-        signal(updated);
+        currentlyUpdatingSignal = true;
+        try {
+          signal(updated);
+        } finally {
+          currentlyUpdatingSignal = false;
+        }
       }
-      return true;
     }
 
     function toSet(): Set<string> {

@@ -1,6 +1,7 @@
 import { SDataArray } from 's-array';
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain } from '../../utils/s';
+import { ensureArray, ensureString } from '../../utils/typescript';
 import { Contributor } from '../contributor/contributor-model';
 import {
   assignContributorEditArea,
@@ -66,19 +67,23 @@ export function assignProjectPlanningSettings(settings: ProjectPlanningSettings,
     void {
   S.freeze(() => {
     assignSettings(settings, plain);
-    settings.stateFieldId(plain.stateFieldId);
-    settings.inactiveStateIds(new Set<string>(plain.inactiveStateIds));
-    settings.remainingEffortFieldId(plain.remainingEffortFieldId);
-    settings.remainingWaitFieldId(plain.remainingWaitFieldId);
-    settings.assigneeFieldId(plain.assigneeFieldId);
-    settings.typeFieldId(plain.typeFieldId);
-    settings.splittableTypeIds(new Set<string>(plain.splittableTypeIds));
+    settings.stateFieldId(ensureString(plain.stateFieldId));
+    settings.inactiveStateIds(new Set<string>(ensureArray(plain.inactiveStateIds, [], isValidId)));
+    settings.remainingEffortFieldId(ensureString(plain.remainingEffortFieldId));
+    settings.remainingWaitFieldId(ensureString(plain.remainingWaitFieldId));
+    settings.assigneeFieldId(ensureString(plain.assigneeFieldId));
+    settings.typeFieldId(ensureString(plain.typeFieldId));
+    settings.splittableTypeIds(new Set<string>(ensureArray(plain.splittableTypeIds, [], isValidId)));
     assignDependsLinkType(settings, plain);
-    settings.savedQueryId(plain.savedQueryId);
-    settings.overlaySavedQueryId(plain.overlaySavedQueryId);
+    settings.savedQueryId(ensureString(plain.savedQueryId));
+    settings.overlaySavedQueryId(ensureString(plain.overlaySavedQueryId));
     assignContributors(settings.contributors, plain.contributors);
     if (plain.transient !== undefined) {
       assignContributorEditArea(settings.transient, plain.transient);
     }
   });
+}
+
+function isValidId(value: unknown): boolean {
+  return typeof value === 'string' && value.length > 0;
 }

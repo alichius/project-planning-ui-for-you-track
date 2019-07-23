@@ -17,7 +17,7 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
       <label for="instanceName" class={LABEL_CLASS}>Title:</label>
       <div class={EDIT_AREA_CLASS}>
         <input id="instanceName" type="text" class={INPUT_CLASS} aria-describedby="instanceNameHelp"
-               placeholder="Enter Name" fn={bindString(settings.name)} />
+               fn={bindString(settings.name)} />
         <small id="instanceNameHelp" class="form-text text-muted">
           The tab/window title, which is also used for bookmarks.
         </small>
@@ -28,10 +28,25 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
       <label for="baseUrl" class={LABEL_CLASS}>Base URL:</label>
       <div class={EDIT_AREA_CLASS}>
         <input id="baseUrl" type="text" class={INPUT_CLASS} aria-describedby="baseUrlHelp"
-               placeholder="Enter URL" fn={bindString(settings.youTrackBaseUrl)} />
+               fn={bindString(settings.youTrackBaseUrl)} />
         <small id="baseUrlHelp" class="form-text text-muted">
-          For YouTrack InCloud, this is of form <code>https://&lt;name&gt;.myjetbrains.com/</code>. For a YouTrack
-          Standalone installation, this is the “Base URL” shown at Server Settings &gt; Global Settings.
+          For YouTrack InCloud, enter the “Base URL” shown
+          at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/domainSettings')}>Server Settings &gt; Domain
+          Settings</a>. The URL should be of form “https://&lt;your-domain&gt;/youtrack”. For YouTrack Standalone, enter
+          the “Base URL” shown at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/settings')}>Server
+          Settings &gt; Global Settings</a>.
+        </small>
+      </div>
+    </div>
+    <div class={FORM_GROUP_CLASS}>
+      <label for="hubServiceUrl" class={LABEL_CLASS}>Hub URL:</label>
+      <div class={EDIT_AREA_CLASS}>
+        <input id="hubServiceUrl" type="text" class={INPUT_CLASS} aria-describedby="hubServiceUrlHelp"
+               disabled={ctrl.isInCloudUrl()} fn={bindString(settings.hubUrl)} />
+        <small id="hubServiceUrl" class="form-text text-muted">
+          For YouTrack InCloud without a custom domain, this setting is not configurable. Otherwise, enter the “Hub URL”
+          shown at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/ring')}>Server Settings &gt; Hub
+          Integration</a>.
         </small>
       </div>
     </div>
@@ -39,10 +54,10 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
       <label for="serviceId" class={LABEL_CLASS}>Service ID in Hub:</label>
       <div class={EDIT_AREA_CLASS}>
         <input id="serviceId" type="text" class={INPUT_CLASS} aria-describedby="serviceIdHelp"
-               placeholder="Enter Service ID in Hub" fn={bindString(settings.youTrackServiceId)} />
+               fn={bindString(settings.youTrackServiceId)} />
         <small id="serviceIdHelp" class={HELP_CLASS}>
-          The YouTrack service ID is available
-          via <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('youtrack/admin/ring')}>Server Settings &gt; Hub
+          Enter the “YouTrack Service ID in Hub” shown
+          at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/ring')}>Server Settings &gt; Hub
           Integration</a>.
         </small>
       </div>
@@ -50,18 +65,20 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
     <div class={FORM_GROUP_CLASS}>
       <div class={`offset-md-4 offset-lg-3 ${EDIT_AREA_CLASS}`}>
         <button type="button" class="btn btn-sm btn-secondary" aria-describedby="loginHelp"
-                disabled={ctrl.verifiedBaseUrl().length === 0 || settings.youTrackServiceId().length === 0}
+                disabled={ctrl.normalizedBaseUrl().length === 0 || ctrl.normalizedHubUrl().length === 0 ||
+                    settings.youTrackServiceId().length === 0}
                 onClick={() => connectSignal(null)}>Connect…</button>
         <small id="loginHelp" class={HELP_CLASS}>
           If you are not logged into YouTrack yet, this will take you to the YouTrack login page. Once logged in, you
           will be redirected back here. Please note: The URI of this web app (that is,
-          “{SettingsCtrl.currentUri()}”) needs to be registered in the&#32;
+          “{SettingsCtrl.currentUri().toString()}”) needs to be registered in the&#32;
           <a target="_blank"
              fn={ctrl.hubRelativeToBaseUrlAndServiceId((serviceId) =>
-                 `youtrack/admin/hub/services/${serviceId}?tab=settings`)}>
+                 `admin/hub/services/${serviceId}?tab=settings`)}>
             Hub Settings
-          </a> under “Redirect URIs”. The URI also needs to be added under “Allowed origins”
-          at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('youtrack/admin/settings')}>Server Settings &gt; Global
+          </a> under “Redirect URIs”. The current origin (that is, “{SettingsCtrl.currentOrigin().toString()}”) also
+          needs to be added under “Allowed origins”
+          at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/settings')}>Server Settings &gt; Global
           Settings</a>.
         </small>
       </div>

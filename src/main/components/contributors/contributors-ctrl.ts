@@ -3,8 +3,8 @@ import S from 's-js';
 import { Plain } from '../../utils/s';
 import { unreachableCase } from '../../utils/typescript';
 import { ContributorCtrl } from '../contributor/contributor-ctrl';
-import { Contributor, ContributorKind, createContributor } from '../contributor/contributor-model';
-import { ContributorEditArea, DEFAULT_NUM_MEMBERS } from './contributors-model';
+import { Contributor, ContributorKind, createContributor, DEFAULT_NUM_MEMBERS } from '../contributor/contributor-model';
+import { ContributorEditArea } from './contributors-model';
 
 export const EXTERNAL_CONTRIBUTOR_VALUE = 'youtrack-planning-js/external';
 

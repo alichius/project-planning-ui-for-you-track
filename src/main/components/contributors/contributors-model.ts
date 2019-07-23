@@ -1,10 +1,13 @@
 import createSDataArray, { SDataArray } from 's-array';
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain } from '../../utils/s';
-import { Contributor, createContributor } from '../contributor/contributor-model';
-
-export const DEFAULT_HOURS_PER_WEEK = 40;
-export const DEFAULT_NUM_MEMBERS = 1;
+import { ensureNumber, ensureString } from '../../utils/typescript';
+import {
+  Contributor,
+  createContributor,
+  DEFAULT_HOURS_PER_WEEK,
+  DEFAULT_NUM_MEMBERS,
+} from '../contributor/contributor-model';
 
 export interface ContributorEditArea {
   hoursPerWeek: DataSignal<number>;
@@ -33,8 +36,8 @@ export function assignContributors(contributors: SDataArray<Contributor>, plain:
 export function assignContributorEditArea(contributorEditArea: ContributorEditArea, plain: Plain<ContributorEditArea>):
     void {
   S.freeze(() => {
-    contributorEditArea.hoursPerWeek(plain.hoursPerWeek);
-    contributorEditArea.id(plain.id);
+    contributorEditArea.hoursPerWeek(ensureNumber(plain.hoursPerWeek));
+    contributorEditArea.id(ensureString(plain.id));
     contributorEditArea.name(plain.name);
     contributorEditArea.numMembers(plain.numMembers);
   });

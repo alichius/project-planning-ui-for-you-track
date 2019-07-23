@@ -15,6 +15,16 @@ export enum Page {
 }
 
 /**
+ * Returns the given value if it is of type {@link Page}, or otherwise the given default value.
+ */
+function ensurePage(value: Page, defaultValue: Page = Page.HOME): Page {
+  switch (value) {
+    case Page.HOME: case Page.WARNINGS: case Page.SETTINGS: return value;
+    default: return defaultValue;
+  }
+}
+
+/**
  * User-provided state of the application.
  *
  * The properties of this interface constitute user input. As such, it must be possible to reconstruct the application
@@ -96,10 +106,11 @@ export function createAppComputation(): AppComputation {
  * The update is performed within a single S.js transaction.
  *
  * @param app application state
- * @param plain plain JSON object
+ * @param plain Plain JSON object. This function cannot rely on static type checking, because the data may be user
+ *     input.
  */
 export function assignApp<T extends Settings>(app: App<T>, plain: Plain<App<T>>) {
   S.freeze(() => {
-    app.currentPage(plain.currentPage);
+    app.currentPage(ensurePage(plain.currentPage));
   });
 }

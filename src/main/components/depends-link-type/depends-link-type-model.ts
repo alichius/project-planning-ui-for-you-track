@@ -1,5 +1,6 @@
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain } from '../../utils/s';
+import { ensureBoolean, ensureString } from '../../utils/typescript';
 
 /**
  * Non-transient state of the settings UI component.
@@ -30,7 +31,7 @@ export function createDependsLinkType(): DependsLinkType {
 export function assignDependsLinkType(type: DependsLinkType, plain: Plain<DependsLinkType>):
     void {
   S.freeze(() => {
-    type.dependsLinkTypeId(plain.dependsLinkTypeId);
-    type.doesInwardDependOnOutward(plain.doesInwardDependOnOutward);
+    type.dependsLinkTypeId(ensureString(plain.dependsLinkTypeId));
+    type.doesInwardDependOnOutward(ensureBoolean(plain.doesInwardDependOnOutward));
   });
 }

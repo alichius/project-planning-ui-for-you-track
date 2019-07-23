@@ -26,7 +26,7 @@ export class AppCtrl<T extends Settings> {
     const settingsCtrl: SettingsCtrl = new SettingsCtrl(app.settings);
     const alertsCtrl: AlertsCtrl = new AlertsCtrl(appComputation.alerts);
     const youTrackMetadataCtrl: YouTrackMetadataCtrl =
-        new YouTrackMetadataCtrl(appComputation.youTrackMetadata, settingsCtrl.verifiedBaseUrl, alertsCtrl);
+        new YouTrackMetadataCtrl(appComputation.youTrackMetadata, settingsCtrl.normalizedBaseUrl, alertsCtrl);
     return new AppCtrl(app, appComputation, settingsCtrl, alertsCtrl, youTrackMetadataCtrl);
   }
 
@@ -68,6 +68,7 @@ export class AppCtrl<T extends Settings> {
   }
 
   private connect(): void {
-    goToOauthPage(this.settingsCtrl.verifiedBaseUrl(), this.app_.settings.youTrackServiceId(), this.app_);
+    goToOauthPage(this.settingsCtrl.normalizedBaseUrl(), this.settingsCtrl.normalizedHubUrl(),
+        this.app_.settings.youTrackServiceId(), this.app_);
   }
 }

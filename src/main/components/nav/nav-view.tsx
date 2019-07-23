@@ -33,9 +33,9 @@ export function NavView({className, appName, currentPage, progress, numWarnings,
             <a class="nav-link text-nowrap" href={href(Page.WARNINGS)}>
               ⚠️
               <span class="ml-sm-1 d-none d-sm-inline">Warnings</span>
-              <span class="badge badge-light badge-warning"
+              &nbsp;
+              <span class="badge badge-warning"
                     fn={withClassIff(() => numWarnings() === 0, 'd-none')}>
-                &nbsp;
                 {numWarnings()}
               </span>
             </a>

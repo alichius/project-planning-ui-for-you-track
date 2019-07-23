@@ -1,5 +1,5 @@
 import S, { DataSignal } from 's-js';
-import { App, assignProjectPlanningApp, jsonable, Plain } from '../main';
+import { App, assignProjectPlanningApp, ensureNumber, jsonable, Plain } from '../main';
 import { createProjectPlanningApp } from '../main/components/project-planning-app/project-planning-app-model';
 import { ProjectPlanningSettings } from '../main/components/project-planning-settings/project-planning-settings-model';
 
@@ -17,6 +17,6 @@ export function createDemoApp(): DemoApp {
 export function assignDemoApp(demoApp: DemoApp, plain: Plain<DemoApp>) {
   S.freeze(() => {
     assignProjectPlanningApp(demoApp, plain);
-    demoApp.zoom(plain.zoom);
+    demoApp.zoom(ensureNumber(plain.zoom));
   });
 }

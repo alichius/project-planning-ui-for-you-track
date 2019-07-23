@@ -1,4 +1,4 @@
-User-interface framework for configuring access to (and retrieving data from) YouTrack. Allows easy embedding of widgets such as a Gantt chart for visualizing project schedules created from [YouTrack saved searches](https://www.jetbrains.com/help/youtrack/standalone/Saved-Search.html).
+User-interface framework facilitating [“external plugins” for YouTrack](https://youtrack.jetbrains.com/issue/JT-570). Allows easy embedding of widgets such as a Gantt chart for visualizing project schedules created from [YouTrack saved searches](https://www.jetbrains.com/help/youtrack/standalone/Saved-Search.html).
 
 ## Status
 

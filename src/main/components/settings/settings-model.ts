@@ -1,5 +1,6 @@
 import S, { DataSignal } from 's-js';
 import { jsonable, Plain, toPlain } from '../../utils/s';
+import { ensureString } from '../../utils/typescript';
 
 /**
  * Non-transient state of the settings UI component.
@@ -7,6 +8,7 @@ import { jsonable, Plain, toPlain } from '../../utils/s';
 export interface Settings {
   readonly name: DataSignal<string>;
   readonly youTrackBaseUrl: DataSignal<string>;
+  readonly hubUrl: DataSignal<string>;
   readonly youTrackServiceId: DataSignal<string>;
 }
 
@@ -17,6 +19,7 @@ export function createSettings(): Settings {
   return {
     name: jsonable(S.value('')),
     youTrackBaseUrl: jsonable(S.value('')),
+    hubUrl: jsonable(S.value('')),
     youTrackServiceId: jsonable(S.value('')),
   };
 }
@@ -31,36 +34,42 @@ export function createSettings(): Settings {
  */
 export function assignSettings(settings: Settings, plain: Plain<Settings>): void {
   S.freeze(() => {
-    settings.name(plain.name);
-    settings.youTrackBaseUrl(plain.youTrackBaseUrl);
-    settings.youTrackServiceId(plain.youTrackServiceId);
+    settings.name(ensureString(plain.name));
+    settings.youTrackBaseUrl(ensureString(plain.youTrackBaseUrl));
+    settings.hubUrl(ensureString(plain.hubUrl));
+    settings.youTrackServiceId(ensureString(plain.youTrackServiceId));
   });
 }
 
 /**
  * Creates a new normalized plain JSON value for the given settings.
  *
- * Normalization means that the YouTrack base URL is the result of {@link normalizedBaseUrl}().
+ * Normalization means that the YouTrack base URL is the result of {@link toNormalizedUrl}().
  */
 export function toNormalizedPlainSettings<T extends Settings>(settings: T): Plain<T> {
   const plainSettings = toPlain(settings);
   return {
     ...plainSettings,
-    youTrackBaseUrl: normalizedBaseUrl(plainSettings.youTrackBaseUrl),
+    youTrackBaseUrl: toNormalizedUrl(plainSettings.youTrackBaseUrl),
+    hubUrl: toNormalizedUrl(plainSettings.youTrackBaseUrl),
   };
 }
 
 /**
- * Returns the normalized YouTrack base URL.
+ * Returns the normalized URL.
  *
  * Normalization means returning a syntactically valid URL that ends with a slash (/).
  *
  * @return the normalized URL, or the empty string if the given URL is not valid
  */
-export function normalizedBaseUrl(baseUrl: string): string {
+export function toNormalizedUrl(urlString: string): string {
   try {
-    const url = new URL(baseUrl);
-    if (url.pathname.length === 0 || url.pathname.charAt(url.pathname.length - 1) !== '/') {
+    const url = new URL(urlString);
+    if (url.host.length === 0) {
+      // Oddly, Safari 12's implementation of the URL constructor does not throw on 'http:' or 'https:' whereas both
+      // Chrome and Firefox do.
+      return '';
+    } else if (url.pathname.length === 0 || url.pathname.charAt(url.pathname.length - 1) !== '/') {
       url.pathname = url.pathname.concat('/');
     }
     return url.toString();

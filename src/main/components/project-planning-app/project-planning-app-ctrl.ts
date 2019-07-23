@@ -219,7 +219,7 @@ export class ProjectPlanningAppCtrl {
       progressCallback: (percentDone) => this.appComputation_.progress(percentDone),
     };
     this.retrieveProjectPlanResult = await retrieveProjectPlan(
-        this.appCtrl.settingsCtrl.verifiedBaseUrl(),
+        this.appCtrl.settingsCtrl.normalizedBaseUrl(),
         youTrackConfig,
         options
     );
