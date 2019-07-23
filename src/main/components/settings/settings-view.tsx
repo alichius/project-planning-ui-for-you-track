@@ -43,7 +43,7 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
       <div class={EDIT_AREA_CLASS}>
         <input id="hubServiceUrl" type="text" class={INPUT_CLASS} aria-describedby="hubServiceUrlHelp"
                disabled={ctrl.isInCloudUrl()} fn={bindString(settings.hubUrl)} />
-        <small id="hubServiceUrl" class="form-text text-muted">
+        <small id="hubServiceUrlHelp" class="form-text text-muted">
           For YouTrack InCloud without a custom domain, this setting is not configurable. Otherwise, enter the “Hub URL”
           shown at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/ring')}>Server Settings &gt; Hub
           Integration</a>.
