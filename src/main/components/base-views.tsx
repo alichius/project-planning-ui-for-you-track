@@ -36,8 +36,9 @@ export interface SelectProperties<T> extends ControlProperties {
 /**
  * Returns a newly created `<select>` control for choosing at most one from a list of option.
  *
- * The control shows a disabled placeholder option if the current value is empty or if the current value is not
- * available.
+ * The control shows a disabled placeholder option if the current value is empty. If the current value is not available,
+ * the control shows “Unknown (ID: <YouTrack entity ID>)” as select option, and this option is *not* disabled. (If it
+ * was disabled, we would be running into [Firefox bug 1569314](https://bugzilla.mozilla.org/show_bug.cgi?id=1569314).)
  */
 export function SelectView<T>({id, label, required = false, elementId, elements, idFromElement, optionTextFromElement,
     invalidCounter, children}: SelectProperties<T>): HTMLElement {
@@ -54,7 +55,7 @@ export function SelectView<T>({id, label, required = false, elementId, elements,
                                unknownIdPlaceholder={(unknownId) => `Unknown (ID: ${unknownId})`}
                                selectedId={elementId()}
                                choices={elements()} >
-              <option value={elementId()} selected disabled />
+              <option value={elementId()} selected disabled={elementId().length === 0} />
             </SinglePlaceholder>
             {Array.from(elements().values(), (element) =>
                 <option value={idFromElement(element)}
@@ -80,6 +81,8 @@ export interface SecondarySelectProperties<T> extends SelectProperties<T> {
  * Returns a “secondary” `<select>` control that allows to choose a single element.
  *
  * The element must differ from the value that (typically) is already the active value of another “primary” control.
+ * If the current value is not available, the control shows “Unknown (ID: <YouTrack entity ID>)” as select option, and
+ * this option is *not* disabled (see {@link SelectView}).
  */
 export function SecondarySelectView<T>(
     {id, label, elementId, elements, idFromElement, optionTextFromElement, primaryElementId, children}:
@@ -93,7 +96,7 @@ export function SecondarySelectView<T>(
           <SinglePlaceholder unknownIdPlaceholder={(unknownId) => `Unknown (ID: ${unknownId})`}
                              selectedId={elementId()}
                              choices={elements()}>
-            <option value={elementId()} selected disabled />
+            <option value={elementId()} selected />
           </SinglePlaceholder>
           {Array.from(elements().values(), (element) =>
               <option value={idFromElement(element)}
@@ -133,7 +136,7 @@ export function MultiSelectView<T>(
           <select id={id} class={SELECT_CLASS} multiple
                   aria-describedby={`${id}Help`} fn={bindStringSet(elementIds)}>
             {multiplePlaceholders(elementIds(), bundleElements(), (inactiveStateId) =>
-                <option value={inactiveStateId} selected disabled>Unknown (ID: {inactiveStateId})</option>
+                <option value={inactiveStateId} selected>Unknown (ID: {inactiveStateId})</option>
             )}
             {Array.from(bundleElements().values(), (bundleElement) =>
               <option value={idFromElement(bundleElement)}
@@ -207,8 +210,7 @@ interface SinglePlaceholderProperties {
 }
 
 /**
- * Returns the `children` property (typically a disabled `<option>` element) if certain conditions are met, or otherwise
- * `null`.
+ * Returns the `children` property (typically an `<option>` element) if certain conditions are met, or otherwise `null`.
  *
  * The {@link HTMLElement.innerText} of the placeholder is set to:
  * - the result of `unknownIdPlaceholder(selectedId)` if `selectedId` is contained in `choices`

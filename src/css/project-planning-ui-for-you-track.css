@@ -2,11 +2,40 @@
 @import "../main/components/contributors/contributors-view.css";
 @import "../main/components/nav/nav-view.css";
 
+/**
+ * Bootstrap
+ * =========
+ */
+
+/*
+ * Highlight the active navbar item, and let the highlighting have the full-height of the navbar. (We are a framework
+ * and not a low-level library, so it is expected to be opinionated. :-))
+ */
+
+.navbar {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.navbar-nav {
+  align-items: center;
+}
+
+.nav-item {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.nav-item.active {
+  background-color: rgba(0,0,0,.1);
+}
+
 /*
  * Undo defaults by Bootstrap 4.3.1. When using validation, only highlight invalid, but do not apply extra highlighting
  * to valid input -- our opinion is that is just visual clutter. It also takes up space and the defaults don't work for
  * select[multiple] elements.
  */
+
 .was-validated .form-control:valid,
 .form-control.is-valid,
 .was-validated .custom-select[multiple]:valid,
@@ -42,4 +71,18 @@
 .was-validated .form-check-input:valid ~ .form-check-label,
 .form-check-input.is-valid ~ .form-check-label {
   color: inherit;
+}
+
+/**
+ * Odds and ends
+ * =============
+ */
+
+/*
+ * Undo a Firefox idiosyncrasy where it would apply a red "glow" for some invalid inputs (according to HTML constraints
+ * validation). For highlighting invalid input, we rely on the Bootstrap CSS instead that targets all browsers.
+ * See https://developer.mozilla.org/en-US/docs/Web/CSS/:invalid#Gecko_defaults for details.
+ */
+:-moz-ui-invalid {
+  box-shadow: none;
 }

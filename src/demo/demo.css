@@ -1,23 +1,5 @@
 @import "../css/project-planning-ui-for-you-track.css";
 
-.navbar {
-  padding-top: 0;
-  padding-bottom: 0;
-}
-
-.navbar-nav {
-  align-items: center;
-}
-
-.nav-item {
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-
-.nav-item.active {
-  background-color: rgba(0,0,0,.1);
-}
-
 .fill-parent {
   top: 0;
   right: 0;
