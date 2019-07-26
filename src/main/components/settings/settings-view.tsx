@@ -1,17 +1,20 @@
 import { DataSignal } from 's-js';
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
+import { Counter } from '../../utils/counter';
 import { bindString } from '../../utils/surplus';
 import { EDIT_AREA_CLASS, FORM_GROUP_CLASS, HELP_CLASS, INPUT_CLASS, LABEL_CLASS } from '../bootstrap';
 import { SettingsCtrl } from './settings-ctrl';
 import { Settings } from './settings-model';
 
 export interface SettingsProperties {
-  settings: Settings;
-  ctrl: SettingsCtrl;
-  connectSignal: DataSignal<null>;
+  readonly settings: Settings;
+  readonly ctrl: SettingsCtrl;
+  readonly connectSignal: DataSignal<null>;
+  readonly invalidCounter: Counter;
 }
 
-export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties): HTMLElement {
+export function SettingsView({settings, ctrl, connectSignal, invalidCounter}: SettingsProperties):
+    HTMLElement {
   return <div>
     <div class={FORM_GROUP_CLASS}>
       <label for="instanceName" class={LABEL_CLASS}>Title:</label>
@@ -27,8 +30,8 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
     <div class={FORM_GROUP_CLASS}>
       <label for="baseUrl" class={LABEL_CLASS}>Base URL:</label>
       <div class={EDIT_AREA_CLASS}>
-        <input id="baseUrl" type="text" class={INPUT_CLASS} aria-describedby="baseUrlHelp"
-               fn={bindString(settings.youTrackBaseUrl)} />
+        <input id="baseUrl" type="URL" required class={INPUT_CLASS} aria-describedby="baseUrlHelp"
+               fn={bindString(settings.youTrackBaseUrl, invalidCounter)} />
         <small id="baseUrlHelp" class="form-text text-muted">
           For YouTrack InCloud, enter the “Base URL” shown
           at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/domainSettings')}>Server Settings &gt; Domain
@@ -41,8 +44,8 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
     <div class={FORM_GROUP_CLASS}>
       <label for="hubServiceUrl" class={LABEL_CLASS}>Hub URL:</label>
       <div class={EDIT_AREA_CLASS}>
-        <input id="hubServiceUrl" type="text" class={INPUT_CLASS} aria-describedby="hubServiceUrlHelp"
-               disabled={ctrl.isInCloudUrl()} fn={bindString(settings.hubUrl)} />
+        <input id="hubServiceUrl" type="URL" required class={INPUT_CLASS} aria-describedby="hubServiceUrlHelp"
+               disabled={ctrl.isInCloudUrl()} fn={bindString(settings.hubUrl, invalidCounter)} />
         <small id="hubServiceUrlHelp" class="form-text text-muted">
           For YouTrack InCloud without a custom domain, this setting is not configurable. Otherwise, enter the “Hub URL”
           shown at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/ring')}>Server Settings &gt; Hub
@@ -53,8 +56,8 @@ export function SettingsView({settings, ctrl, connectSignal}: SettingsProperties
     <div class={FORM_GROUP_CLASS}>
       <label for="serviceId" class={LABEL_CLASS}>Service ID in Hub:</label>
       <div class={EDIT_AREA_CLASS}>
-        <input id="serviceId" type="text" class={INPUT_CLASS} aria-describedby="serviceIdHelp"
-               fn={bindString(settings.youTrackServiceId)} />
+        <input id="serviceId" type="text" required class={INPUT_CLASS} aria-describedby="serviceIdHelp"
+               fn={bindString(settings.youTrackServiceId, invalidCounter)} />
         <small id="serviceIdHelp" class={HELP_CLASS}>
           Enter the “YouTrack Service ID in Hub” shown
           at <a target="_blank" fn={ctrl.hrefRelativeToBaseUrl('admin/ring')}>Server Settings &gt; Hub

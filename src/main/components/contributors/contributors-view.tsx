@@ -1,10 +1,12 @@
 import { mapSample, SDataArray } from 's-array';
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
+import { Counter } from '../../utils/counter';
 import { bindNumber, bindString, focusOnChangeToValue, sortableBindSarray, withClassIff } from '../../utils/surplus';
 import { User } from '../../youtrack-rest';
 import {
   EDIT_AREA_CLASS,
   FORM_GROUP_CLASS,
+  HELP_CLASS,
   INPUT_CLASS,
   INPUT_CLASS_RIGHT,
   LABEL_CLASS,
@@ -27,9 +29,10 @@ export interface ContributorsProperties {
   readonly contributorEditArea: ContributorEditArea;
   readonly ctrl: ContributorsCtrl;
   readonly youTrackUserMap: () => Map<string, User>;
+  readonly invalidCounter: Counter;
 }
 
-export function ContributorsView({label, contributors, contributorEditArea, ctrl, youTrackUserMap}:
+export function ContributorsView({label, contributors, contributorEditArea, ctrl, youTrackUserMap, invalidCounter}:
     ContributorsProperties): HTMLElement {
   return (
       <div class={FORM_GROUP_CLASS}>
@@ -39,7 +42,8 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
               fn1={sortableBindSarray(contributors, {handle: `.${DRAGGABLE_HANDLE_CLASS}`})}
               fn2={withClassIff(() => contributors().length === 0, 'd-none')}>
             {mapSample(ctrl.contributorCtrls, ([contributor, contributorCtrl]) =>
-                <ContributorView contributor={contributor} ctrl={contributorCtrl} youTrackUserMap={youTrackUserMap} />
+                <ContributorView contributor={contributor} ctrl={contributorCtrl} youTrackUserMap={youTrackUserMap}
+                                 invalidCounter={invalidCounter} />
             )}
           </ul>
           <div class="list-group-add d-flex">
@@ -60,7 +64,7 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
               </div>
               <div class="input-group input-group-sm flex-nowrap flex-fill mr-3 mb-1 mb-sm-0"
                    fn={withClassIff(() => ctrl.newEntryType() !== ContributorKind.EXTERNAL, 'd-none')}>
-                <input class={INPUT_CLASS} size={10} aria-label="Name of external contributor"
+                <input class={INPUT_CLASS} size={10} required aria-label="Name of external contributor"
                        fn1={bindString(contributorEditArea.name)}
                        fn2={focusOnChangeToValue<ContributorKind>(ctrl.newEntryType, ContributorKind.EXTERNAL)} />
                 <div class="input-group-append">
@@ -69,7 +73,7 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
               </div>
               <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0"
                    fn={withClassIff(() => ctrl.newEntryType() !== ContributorKind.EXTERNAL, 'd-none')}>
-                <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS}
+                <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS} required
                        style={{width: INPUT_WIDTH_3_DIGITS}}
                        aria-label="Number of persons" fn={bindNumber(contributorEditArea.numMembers)} />
                 <div class="input-group-append">
@@ -77,7 +81,7 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
                 </div>
               </div>
               <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
-                <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK}
+                <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK} required
                        style={{width: INPUT_WIDTH_3_DIGITS}}
                        aria-label="Hours per week per person" fn={bindNumber(contributorEditArea.hoursPerWeek)} />
                 <div class="input-group-append">
@@ -89,6 +93,11 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
               <span aria-hidden="true">+</span>
             </button>
           </div>
+          <small class={HELP_CLASS}>
+            Define one or more contributors who can be assigned work. A contributor is either a single YouTrack user or
+            an “external contributor” which can be a group of multiple people. After entering the details for a new
+            contributor, click the “+” button.
+          </small>
         </div>
       </div>
   );

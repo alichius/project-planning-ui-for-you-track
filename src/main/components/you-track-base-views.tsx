@@ -12,17 +12,23 @@ import {
 type StandardProperties = 'idFromElement' | 'optionTextFromElement';
 type ElementIdAndElements = Pick<SelectProperties<CustomField>, 'elementId' | 'elements'>;
 
-export function IssueFieldView({id, label, allowEmpty, elementId, elements, children}:
+export function IssueFieldView({id, label, required, elementId, elements, invalidCounter, children}:
     Omit<SelectProperties<CustomField>, StandardProperties>): HTMLElement {
   return (
-      <SelectView id={id} label={label} allowEmpty={allowEmpty} elementId={elementId} elements={elements}
+      <SelectView id={id} label={label} required={required} elementId={elementId} elements={elements}
                   idFromElement={(field) => field.id}
-                  optionTextFromElement={(field) => field.name}>
+                  optionTextFromElement={(field) => field.name}
+                  invalidCounter={invalidCounter}>
         {children}
       </SelectView>
   );
 }
 
+/**
+ * Returns a control that allows to choose the assignee custom field.
+ *
+ * The assignee custom field is assumed to be optional (and hence the input is always valid, even if empty).
+ */
 export function AssigneeFieldView({elementId, elements}: ElementIdAndElements): HTMLElement {
   return (
       <IssueFieldView id="assigneeField" label="Assignee Field:" elementId={elementId} elements={elements}>
@@ -31,6 +37,11 @@ export function AssigneeFieldView({elementId, elements}: ElementIdAndElements): 
   );
 }
 
+/**
+ * Returns a control that allows to choose the issue type custom field.
+ *
+ * The issue type custom field is assumed to be optional (and hence the input is always valid, even if empty).
+ */
 export function IssueTypeFieldView({elementId, elements}: ElementIdAndElements): HTMLElement {
   return (
       <IssueFieldView id="typeField" label="Type Field:" elementId={elementId} elements={elements}>
@@ -39,23 +50,25 @@ export function IssueTypeFieldView({elementId, elements}: ElementIdAndElements):
   );
 }
 
-export function LinkTypeView({id, label, elementId, elements, children}:
+export function LinkTypeView({id, label, required, elementId, elements, invalidCounter, children}:
     Omit<SelectProperties<IssueLinkType>, StandardProperties>): HTMLElement {
   return (
-      <SelectView id={id} label={label} elementId={elementId} elements={elements}
+      <SelectView id={id} label={label} required={required} elementId={elementId} elements={elements}
                   idFromElement={(linkType) => linkType.id}
                   optionTextFromElement={(linkType) =>
-                      `${linkType.name} (${linkType.sourceToTarget} → ${linkType.targetToSource})`}>
+                      `${linkType.name} (${linkType.sourceToTarget} → ${linkType.targetToSource})`}
+                  invalidCounter={invalidCounter}>
         {children}
       </SelectView>
   );
 }
 
-export function SavedQueryView({id, label, elementId, elements, children}:
+export function SavedQueryView({id, label, elementId, elements, invalidCounter, children}:
     Omit<SelectProperties<SavedQuery>, StandardProperties>): HTMLElement {
   return (
-      <SelectView id={id} label={label} elementId={elementId} elements={elements}
-                     idFromElement={idFromElement} optionTextFromElement={optionTextFromSavedQuery}>
+      <SelectView id={id} label={label} required elementId={elementId} elements={elements}
+                  idFromElement={idFromElement} optionTextFromElement={optionTextFromSavedQuery}
+                  invalidCounter={invalidCounter}>
         {children}
       </SelectView>
   );
@@ -65,8 +78,8 @@ export function OverlaySavedQueryView({id, label, elementId, elements, primaryEl
     Omit<SecondarySelectProperties<SavedQuery>, StandardProperties>): HTMLElement {
   return (
       <SecondarySelectView id={id} label={label} elementId={elementId} elements={elements}
-                              idFromElement={idFromElement} optionTextFromElement={optionTextFromSavedQuery}
-                              primaryElementId={primaryElementId}>
+                           idFromElement={idFromElement} optionTextFromElement={optionTextFromSavedQuery}
+                           primaryElementId={primaryElementId}>
         {children}
       </SecondarySelectView>
   );

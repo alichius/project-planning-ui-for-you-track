@@ -1,3 +1,45 @@
 @import "../main/components/alerts/alerts-view.css";
 @import "../main/components/contributors/contributors-view.css";
 @import "../main/components/nav/nav-view.css";
+
+/*
+ * Undo defaults by Bootstrap 4.3.1. When using validation, only highlight invalid, but do not apply extra highlighting
+ * to valid input -- our opinion is that is just visual clutter. It also takes up space and the defaults don't work for
+ * select[multiple] elements.
+ */
+.was-validated .form-control:valid,
+.form-control.is-valid,
+.was-validated .custom-select[multiple]:valid,
+.custom-select[multiple].is-valid {
+  border-color: #ced4da;
+  background-image: none;
+}
+
+.was-validated .custom-select:valid,
+.custom-select.is-valid {
+  border-color: #ced4da;
+  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right .75rem center/8px 10px;
+}
+
+.was-validated .form-control:valid.form-control-sm,
+.form-control.form-control-sm.is-valid {
+  padding-right: 0.5rem;
+}
+
+.was-validated .custom-select:valid.custom-select-sm,
+.custom-select.custom-select-sm.is-valid {
+  padding-right: 1.75rem;
+}
+
+.was-validated .form-control:valid:focus,
+.form-control.is-valid:focus,
+.was-validated .custom-select:valid:focus,
+.custom-select.is-valid:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.was-validated .form-check-input:valid ~ .form-check-label,
+.form-check-input.is-valid ~ .form-check-label {
+  color: inherit;
+}

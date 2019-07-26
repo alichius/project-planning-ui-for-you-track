@@ -1,5 +1,6 @@
 import { goToOauthPage, } from '@fschopp/project-planning-for-you-track';
 import S from 's-js';
+import { Counter } from '../../utils/counter';
 import { AlertsCtrl } from '../alerts/alerts-ctrl';
 import { SettingsCtrl } from '../settings/settings-ctrl';
 import { Settings } from '../settings/settings-model';
@@ -27,7 +28,8 @@ export class AppCtrl<T extends Settings> {
     const alertsCtrl: AlertsCtrl = new AlertsCtrl(appComputation.alerts);
     const youTrackMetadataCtrl: YouTrackMetadataCtrl =
         new YouTrackMetadataCtrl(appComputation.youTrackMetadata, settingsCtrl.normalizedBaseUrl, alertsCtrl);
-    return new AppCtrl(app, appComputation, settingsCtrl, alertsCtrl, youTrackMetadataCtrl);
+    const invalidCounter = new Counter(appComputation.numInvalidSettings);
+    return new AppCtrl(app, appComputation, settingsCtrl, alertsCtrl, youTrackMetadataCtrl, invalidCounter);
   }
 
   /**
@@ -38,13 +40,15 @@ export class AppCtrl<T extends Settings> {
    * @param settingsCtrl The controller for elementary settings (name of YouTrack instance, base URL, etc.).
    * @param alertsCtrl The controller for displaying alerts to the user.
    * @param youTrackMetadataCtrl The controller for retrieving YouTrack metadata.
+   * @param invalidCounter The controller for counting the number of invalid settings.
    */
   public constructor(
       private readonly app_: App<T>,
       private readonly appComputation_: AppComputation,
       public readonly settingsCtrl: SettingsCtrl,
       public readonly alertsCtrl: AlertsCtrl,
-      public readonly youTrackMetadataCtrl: YouTrackMetadataCtrl
+      public readonly youTrackMetadataCtrl: YouTrackMetadataCtrl,
+      public readonly invalidCounter: Counter
   ) {
     // 'seed' is undefined (the calculation does not keep a state), and 'onchanges' is true (skip the initial run).
     S.on(this.appComputation_.connect, () => this.connect(), undefined, true);

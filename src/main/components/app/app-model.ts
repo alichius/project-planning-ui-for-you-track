@@ -57,6 +57,15 @@ export interface AppComputation {
   readonly name: DataSignal<string>;
 
   /**
+   * Signal carrying the number of invalid settings.
+   *
+   * There are no constraints on what is a setting. For instance, multiple `<input>` elements may be aggregated in a
+   * single setting. Therefore, the only meaningful information conveyed to consumers of this signal is whether there
+   * are any invalid settings at all and that the number of invalid settings has changed.
+   */
+  readonly numInvalidSettings: DataSignal<number>;
+
+  /**
    * Array signal carrying the list of alerts currently shown.
    */
   readonly alerts: SDataArray<Alert>;
@@ -93,6 +102,7 @@ export function createApp<T extends Settings>(settings: T): App<T> {
 export function createAppComputation(): AppComputation {
   return {
     name: S.value(document.title),
+    numInvalidSettings: S.value(0),
     alerts: createSDataArray<Alert>([]),
     youTrackMetadata: S.value(undefined),
     progress: S.value(undefined),

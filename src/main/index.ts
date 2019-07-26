@@ -16,6 +16,7 @@ export * from './components/nav/nav-view';
 
 export * from './components/project-planning-app/project-planning-app-ctrl';
 export * from './components/project-planning-app/project-planning-app-model';
+export * from './components/project-planning-app/project-planning-app-view';
 
 export * from './components/project-planning-settings/project-planning-settings-ctrl';
 export * from './components/project-planning-settings/project-planning-settings-model';
@@ -34,6 +35,7 @@ export * from './components/you-track-base-views';
 export * from './components/you-track-metadata/you-track-metadata-ctrl';
 export * from './components/you-track-metadata/you-track-metadata-model';
 
+export * from './utils/counter';
 export * from './utils/s';
 export * from './utils/surplus';
 export * from './utils/typescript';

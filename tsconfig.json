@@ -52,9 +52,7 @@
 
     "src/main/components/project-planning-app/project-planning-app-ctrl.ts",
     "src/main/components/project-planning-app/project-planning-app-model.ts",
-
-    "src/main/components/project-planning-app/project-planning-app-ctrl.ts",
-    "src/main/components/project-planning-app/project-planning-app-model.ts",
+    "src/main/components/project-planning-app/project-planning-app-view.ts",
 
     "src/main/components/project-planning-settings/project-planning-settings-ctrl.ts",
     "src/main/components/project-planning-settings/project-planning-settings-model.ts",
@@ -74,7 +72,10 @@
     "src/main/components/you-track-metadata/you-track-metadata-model.ts",
 
     "src/main/index.ts",
+    "src/main/utils/counter.ts",
+    "src/main/utils/s.ts",
     "src/main/utils/surplus.ts",
+    "src/main/utils/typescript.ts",
 
     // Note that this file should not have any exported symbols, or otherwise TypeDoc would pick those up (see previous
     // comment).

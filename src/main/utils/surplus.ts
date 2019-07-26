@@ -1,6 +1,7 @@
 import { SDataArray } from 's-array';
 import S, { DataSignal } from 's-js';
 import Sortable from 'sortablejs';
+import { Counter } from './counter';
 
 /**
  * One-way binds the given data-signal array to react to UI changes in the given HTML element (note the currying).
@@ -29,32 +30,44 @@ export function sortableBindSarray<T>(sArray: SDataArray<T>, sortableOptions?: {
   };
 }
 
-/**
- * Two-way binds the given `number` data signal with the given `<input>` element (note the currying).
- */
-export function bindNumber(signal: DataSignal<number>): (element: HTMLInputElement) => void {
+function bind<T extends number | string, U extends HTMLInputElement | HTMLSelectElement>(
+    signal: DataSignal<T>,
+    get: (element: U) => T,
+    set: (element: U, newValue: T) => void,
+    invalidCounter?: Counter
+): (element: U) => void {
   return (element) => {
-    let currentlyUpdatingSignal = false;
+    let isCurrentlyUpdatingSignal = false;
+    const isInvalidSignal: DataSignal<boolean> = S.value(false);
     S(() => {
-      const newValue: number = signal();
-      if (!currentlyUpdatingSignal) {
-        element.valueAsNumber = newValue;
+      const newValue: T = signal();
+      if (!isCurrentlyUpdatingSignal) {
+        set(element, newValue);
       }
+      isInvalidSignal(!element.checkValidity());
     });
 
     const event = 'input';
     element.addEventListener(event, valueListener, false);
-    S.cleanup(() => element.removeEventListener(event, valueListener));
+    if (invalidCounter !== undefined) {
+      invalidCounter.add(isInvalidSignal);
+    }
+    S.cleanup(() => {
+      element.removeEventListener(event, valueListener);
+      if (invalidCounter !== undefined) {
+        invalidCounter.delete(isInvalidSignal);
+      }
+    });
 
     function valueListener(): void {
-      const current: number = S.sample(signal);
-      const updated: number = element.valueAsNumber;
+      const current: T = S.sample(signal);
+      const updated: T = get(element);
       if (current !== updated) {
-        currentlyUpdatingSignal = true;
+        isCurrentlyUpdatingSignal = true;
         try {
           signal(updated);
         } finally {
-          currentlyUpdatingSignal = false;
+          isCurrentlyUpdatingSignal = false;
         }
       }
     }
@@ -62,40 +75,29 @@ export function bindNumber(signal: DataSignal<number>): (element: HTMLInputEleme
 }
 
 /**
+ * Two-way binds the given `number` data signal with the given `<input>` element (note the currying).
+ */
+export function bindNumber(signal: DataSignal<number>, invalidCounter?: Counter):
+    (element: HTMLInputElement) => void {
+  return bind(
+      signal,
+      (element) => element.valueAsNumber,
+      (element, newValue) => element.valueAsNumber = newValue,
+      invalidCounter
+  );
+}
+
+/**
  * Two-way binds the given `string` data signal with the given `<input>` element (note the currying).
  */
-export function bindString(signal: DataSignal<string>): (element: HTMLInputElement | HTMLSelectElement) => void {
-  return (element) => {
-    let currentlyUpdatingSignal = false;
-    S(() => {
-      // Call signal() outside of if-block, so the dependency on the signal is never lost.
-      const newValue: string = signal();
-
-      // Don't set value as a response of an 'input' event. It doesn't just feel wrong, in Safari 12 (for example) it
-      // also moves the cursor to the end of the input field.
-      if (!currentlyUpdatingSignal) {
-        element.value = newValue;
-      }
-    });
-
-    const event = 'input';
-    element.addEventListener(event, valueListener, false);
-    S.cleanup(() => element.removeEventListener(event, valueListener));
-
-    function valueListener(): void {
-      const current: string = S.sample(signal);
-      const updated: string = element.value;
-      if (current !== updated) {
-        currentlyUpdatingSignal = true;
-        // Try-block for defensive programming.
-        try {
-          signal(updated);
-        } finally {
-          currentlyUpdatingSignal = false;
-        }
-      }
-    }
-  };
+export function bindString(signal: DataSignal<string>, invalidCounter?: Counter):
+    (element: HTMLInputElement | HTMLSelectElement) => void {
+  return bind(
+      signal,
+      (element) => element.value,
+      (element, newValue) => element.value = newValue,
+      invalidCounter
+  );
 }
 
 /**
@@ -130,7 +132,7 @@ export function bindToOnValue<T>(signal: DataSignal<T>, onValue: T): (element: H
 }
 
 /**
- * Two-way binds the given data signal with the given 'multiple' `<select>` element (note the currying).
+ * Two-way binds the given data signal with the given `<select multiple>` element (note the currying).
  */
 export function bindStringSet(signal: DataSignal<Set<string>>): (element: HTMLSelectElement) => void {
   return (element) => {

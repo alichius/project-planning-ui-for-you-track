@@ -1,5 +1,6 @@
 import S, { DataSignal } from 's-js';
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
+import { Counter } from '../utils/counter';
 import { bindString, bindStringSet, bindToOnValue, withClassIff } from '../utils/surplus';
 import {
   CHECK_CLASS,
@@ -23,11 +24,12 @@ export interface ControlProperties {
  * Properties for {@link SelectView}.
  */
 export interface SelectProperties<T> extends ControlProperties {
-  readonly allowEmpty?: boolean;
+  readonly required?: boolean;
   readonly elementId: DataSignal<string>;
   readonly elements: () => Map<string, T>;
   readonly idFromElement: (element: T) => string;
   readonly optionTextFromElement: (element: T) => string;
+  readonly invalidCounter?: Counter;
   readonly children: JSX.Children;
 }
 
@@ -37,20 +39,18 @@ export interface SelectProperties<T> extends ControlProperties {
  * The control shows a disabled placeholder option if the current value is empty or if the current value is not
  * available.
  */
-export function SelectView<T>(
-    {id, label, allowEmpty = false, elementId, elements, idFromElement, optionTextFromElement, children}:
-        SelectProperties<T>)
-    : HTMLElement {
+export function SelectView<T>({id, label, required = false, elementId, elements, idFromElement, optionTextFromElement,
+    invalidCounter, children}: SelectProperties<T>): HTMLElement {
   return (
       <div class={FORM_GROUP_CLASS}>
         <label for={id} class={LABEL_CLASS}>{label}</label>
         <div class={EDIT_AREA_CLASS}>
-          <select id={id} class={SELECT_CLASS} aria-describedby={`${id}Help`}
-                  fn={bindString(elementId)}>
-            {allowEmpty &&
+          <select id={id} class={SELECT_CLASS} aria-describedby={`${id}Help`} required={required}
+                  fn={bindString(elementId, invalidCounter)}>
+            {!required &&
                 <option value="">None</option>
             }
-            <SinglePlaceholder defaultPlaceholder={allowEmpty ? undefined : 'None selected'}
+            <SinglePlaceholder defaultPlaceholder={!required ? undefined : 'None selected'}
                                unknownIdPlaceholder={(unknownId) => `Unknown (ID: ${unknownId})`}
                                selectedId={elementId()}
                                choices={elements()} >
@@ -119,6 +119,11 @@ export interface MultiSelectProperties<T> extends ControlProperties {
   readonly children: JSX.Children;
 }
 
+/**
+ * Returns a `<select multiple>` control that allows to choose zero or more elements.
+ *
+ * The user may choose zero or more elements, so the input is assumed to be always valid.
+ */
 export function MultiSelectView<T>(
     {id, label, elementIds, bundleElements, idFromElement, optionTextFromElement, children}: MultiSelectProperties<T>):
     HTMLElement {

@@ -1,4 +1,5 @@
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
+import { Counter } from '../../utils/counter';
 import { bindNumber, bindString } from '../../utils/surplus';
 import { User } from '../../youtrack-rest';
 import { INPUT_CLASS, INPUT_CLASS_RIGHT, PLAINTEXT_CLASS } from '../bootstrap';
@@ -19,35 +20,37 @@ export interface ContributorProperties {
   contributor: Contributor;
   ctrl: ContributorCtrl;
   youTrackUserMap: () => Map<string, User>;
+  readonly invalidCounter: Counter;
 }
 
-export function ContributorView({contributor, ctrl, youTrackUserMap}: ContributorProperties): HTMLElement {
+export function ContributorView({contributor, ctrl, youTrackUserMap, invalidCounter}: ContributorProperties):
+    HTMLElement {
   return (
       <li class="list-group-item draggable d-flex">
         <div class={DRAGGABLE_HANDLE_CLASS}>⣿</div>
         <div class="form-inline flex-grow-1">
           <div class="flex-fill mr-3 mb-1 mb-sm-0">
             {contributor.type === ContributorKind.EXTERNAL
-                ? <input class={`${INPUT_CLASS} w-100`} aria-label="Name of external contributor" size={10}
-                         fn={bindString(contributor.name)} />
+                ? <input class={`${INPUT_CLASS} w-100`} aria-label="Name of external contributor" size={10} required
+                         fn={bindString(contributor.name, invalidCounter)} />
                 : <input class={PLAINTEXT_CLASS} aria-label="Name of YouTrack user"
                          readOnly value={youTrackUserName(contributor, youTrackUserMap)} />
             }
           </div>
           {contributor.type === ContributorKind.EXTERNAL &&
             <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
-              <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS}
+              <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_PERSONS_PER_CONTRIBUTORS} required
                 aria-label="Number of persons" style={{width: INPUT_WIDTH_3_DIGITS}}
-                fn={bindNumber(contributor.numMembers)} />
+                fn={bindNumber(contributor.numMembers, invalidCounter)} />
               <div class="input-group-append">
                 <span class="input-group-text">👤</span>
               </div>
             </div>
           }
           <div class="input-group input-group-sm flex-nowrap mr-3 mb-1 mb-sm-0">
-            <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK}
+            <input type="number" class={INPUT_CLASS_RIGHT} min="1" max={MAX_HOURS_PER_WEEK} required
                    aria-label="Hours per week per person" style={{width: INPUT_WIDTH_3_DIGITS}}
-                   fn={bindNumber(contributor.hoursPerWeek)} />
+                   fn={bindNumber(contributor.hoursPerWeek, invalidCounter)} />
             <div class="input-group-append">
               <span class="input-group-text">h/week</span>
             </div>

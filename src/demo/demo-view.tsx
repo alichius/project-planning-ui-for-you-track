@@ -1,11 +1,18 @@
 import { ProjectPlan } from '@fschopp/project-planning-for-you-track';
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
-import { AlertsView, bindNumber, NavView, Page, WarningsView, withClassIff, } from '../main';
-import { Action, ExtendedProjectPlan } from '../main/components/project-planning-app/project-planning-app-ctrl';
-import { ProjectPlanningAppComputation } from '../main/components/project-planning-app/project-planning-app-model';
 import {
+  Action,
+  AlertsView,
+  bindNumber,
+  ExtendedProjectPlan,
+  NavView,
+  Page,
+  projectPlanningActionLabel,
+  ProjectPlanningAppComputation,
   ProjectPlanningSettingsView,
-} from '../main/components/project-planning-settings/project-planning-settings-view';
+  WarningsView,
+  withClassIff,
+} from '../main';
 import { DemoCtrl } from './demo-ctrl';
 import { DemoApp } from './demo-model';
 
@@ -21,7 +28,7 @@ export function DemoView({app, appComputation, ctrl}: DemoProperties): HTMLEleme
         <NavView appName={appComputation.name} currentPage={app.currentPage} progress={appComputation.progress}
                  numWarnings={ctrl.projectPlanningAppCtrl.numWarnings}
                  isActionBtnVisible={() => ctrl.projectPlanningAppCtrl.action() !== Action.NOTHING}
-                 actionBtnLabel={ctrl.projectPlanningAppCtrl.actionLabel}
+                 actionBtnLabel={() => projectPlanningActionLabel(ctrl.projectPlanningAppCtrl.action())}
                  actionSignal={appComputation.doAction} />
         {/* See https://stackoverflow.com/a/36247448 for "overflow-hidden" */}
         <main role="main" class="position-relative overflow-hidden flex-shrink-1 flex-grow-1 border-top border-bottom">
@@ -60,11 +67,12 @@ export function DemoView({app, appComputation, ctrl}: DemoProperties): HTMLEleme
           </div>
           <div class="overflow-auto position-absolute fill-parent"
                fn={withClassIff(() => app.currentPage() !== Page.SETTINGS, 'invisible')}>
-            <div class="container">
+            <form class="container was-validated">
               <h2 class="mt-3">Settings</h2>
               <ProjectPlanningSettingsView settings={app.settings} ctrl={ctrl.projectPlanningAppCtrl.settingsCtrl}
-                                           connectSignal={appComputation.connect}/>
-            </div>
+                                           connectSignal={appComputation.connect}
+                                           invalidCounter={ctrl.projectPlanningAppCtrl.appCtrl.invalidCounter} />
+            </form>
           </div>
         </main>
         <footer class="footer my-3">

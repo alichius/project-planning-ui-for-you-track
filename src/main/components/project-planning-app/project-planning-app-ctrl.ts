@@ -18,7 +18,7 @@ import { deepEquals } from '../../utils/deep-equals';
 import { Plain } from '../../utils/s';
 import { unreachableCase } from '../../utils/typescript';
 import { AppCtrl } from '../app/app-ctrl';
-import { App } from '../app/app-model';
+import { App, Page } from '../app/app-model';
 import { ContributorCtrl } from '../contributor/contributor-ctrl';
 import { Contributor as ContributorModel, ContributorKind } from '../contributor/contributor-model';
 import { ContributorsCtrl } from '../contributors/contributors-ctrl';
@@ -54,6 +54,7 @@ const MIN_ACTIVITY_DURATION = 4;
 const EXTERNAL_CONTRIBUTOR_ID_PREFIX = '@fschopp/project-planning-ui-for-you-track/';
 
 export enum Action {
+  COMPLETE_SETTINGS = 'complete',
   CONNECT = 'connect',
   BUILD_PLAN = 'build',
   UPDATE_PREDICTION = 'update',
@@ -110,11 +111,6 @@ export class ProjectPlanningAppCtrl {
    */
   public readonly numWarnings: () => number;
 
-  /**
-   * Signal carrying the label of the button in the navbar.
-   */
-  public readonly actionLabel: () => string;
-
 
   private readonly extendedProjectPlan_: DataSignal<ExtendedProjectPlan | undefined> = S.value(undefined);
   private retrievedProjectPlanTimestamp: number | undefined;
@@ -150,24 +146,13 @@ export class ProjectPlanningAppCtrl {
     this.action = S(() => actionFromState(
         this.appComputation_.progress(), this.appCtrl.youTrackMetadataCtrl.pendingMetadata(),
         this.appComputation_.youTrackMetadata(), this.extendedProjectPlan_(),
-        toNormalizedPlainSettings(this.app_.settings)));
+        toNormalizedPlainSettings(this.app_.settings), app_.currentPage(), appComputation_.numInvalidSettings() === 0));
     this.extendedProjectPlan = this.extendedProjectPlan_;
     this.numWarnings = S(() => {
       const extendedProjectPlan: ExtendedProjectPlan | undefined = this.extendedProjectPlan();
       return extendedProjectPlan === undefined
           ? 0
           : extendedProjectPlan.plan.warnings.length;
-    });
-    this.actionLabel = S(() => {
-      const action: Action = this.action();
-      switch (action) {
-        case Action.CONNECT: return 'Connect';
-        case Action.BUILD_PLAN: return 'Build plan';
-        case Action.UPDATE_PREDICTION: return 'Update prediction';
-        case Action.STOP: return 'Stop';
-        case Action.NOTHING: return 'Nothing';
-        default: return unreachableCase(action);
-      }
     });
 
     // 'seed' is undefined (the calculation does not keep a state), and 'onchanges' is true (skip the initial run).
@@ -177,6 +162,7 @@ export class ProjectPlanningAppCtrl {
   public defaultAction(): void {
     const action: Action = this.action();
     switch (action) {
+      case Action.COMPLETE_SETTINGS: this.app_.currentPage(Page.SETTINGS); return;
       case Action.CONNECT: this.appComputation_.connect(null); return;
       case Action.BUILD_PLAN:
         return this.appCtrl.showErrorIfFailure(
@@ -277,9 +263,13 @@ export class ProjectPlanningAppCtrl {
 
 function actionFromState(progress: number | undefined, pendingMetadata: boolean,
     youTrackMetadata: YouTrackMetadata | undefined, extendedProjectPlan: ExtendedProjectPlan | undefined,
-    currentSettings: Plain<ProjectPlanningSettings>): Action {
+    currentSettings: Plain<ProjectPlanningSettings>, currentPage: Page, validSettings: boolean): Action {
   if (progress !== undefined || pendingMetadata) {
     return Action.STOP;
+  } else if (!validSettings) {
+    return currentPage === Page.SETTINGS
+        ? Action.NOTHING
+        : Action.COMPLETE_SETTINGS;
   } else if (youTrackMetadata === undefined) {
     return Action.CONNECT;
   } else if (extendedProjectPlan === undefined) {
