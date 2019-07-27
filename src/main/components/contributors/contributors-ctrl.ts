@@ -1,12 +1,11 @@
 import { SArray, SDataArray } from 's-array';
 import S from 's-js';
+import { Counter } from '../../utils/counter';
 import { Plain } from '../../utils/s';
 import { unreachableCase } from '../../utils/typescript';
 import { ContributorCtrl } from '../contributor/contributor-ctrl';
 import { Contributor, ContributorKind, createContributor, DEFAULT_NUM_MEMBERS } from '../contributor/contributor-model';
-import { ContributorEditArea } from './contributors-model';
-
-export const EXTERNAL_CONTRIBUTOR_VALUE = 'youtrack-planning-js/external';
+import { ContributorEditArea, EXTERNAL_CONTRIBUTOR_VALUE } from './contributors-model';
 
 export class ContributorsCtrl {
   public readonly contributorCtrls: SArray<[Contributor, ContributorCtrl]>;
@@ -19,9 +18,11 @@ export class ContributorsCtrl {
   public constructor(
       private readonly contributors_: SDataArray<Contributor>,
       private readonly contributorEditArea_: ContributorEditArea,
-      createContributorCtrl: (contributor: Contributor) => ContributorCtrl
+      createContributorCtrl: (contributor: Contributor) => ContributorCtrl,
+      invalidCounter: Counter
   ) {
     this.contributorCtrls = contributors_.map((contributor) => [contributor, createContributorCtrl(contributor)]);
+    invalidCounter.add(() => contributors_().length === 0);
   }
 
   public create(): void {

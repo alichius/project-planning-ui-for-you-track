@@ -31,6 +31,21 @@
 }
 
 /*
+ * Give the placeholder in a <select> the same color as the placeholder in <input> fields
+ * (class "form-control::placeholder"). Of course, we need to "undo" this for its children. The color is taken from
+ * class "form-control". Finally, we have to exclude children with attribute disabled because Firefox (at least version
+ 68 on macOS) would otherwise use the same color also for disabled options.
+ */
+
+select:invalid {
+  color: #6c757d;
+}
+
+select:invalid :not([disabled]) {
+  color: #495057;
+}
+
+/*
  * Undo defaults by Bootstrap 4.3.1. When using validation, only highlight invalid, but do not apply extra highlighting
  * to valid input -- our opinion is that is just visual clutter. It also takes up space and the defaults don't work for
  * select[multiple] elements.

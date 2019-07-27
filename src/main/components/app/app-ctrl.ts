@@ -40,7 +40,12 @@ export class AppCtrl<T extends Settings> {
    * @param settingsCtrl The controller for elementary settings (name of YouTrack instance, base URL, etc.).
    * @param alertsCtrl The controller for displaying alerts to the user.
    * @param youTrackMetadataCtrl The controller for retrieving YouTrack metadata.
-   * @param invalidCounter The controller for counting the number of invalid settings.
+   * @param invalidCounter The controller for counting the number of invalid settings. Unfortunately, in its current
+   *     form, only the views update the counter. This is because the count information originates from the HTML5
+   *     constraint validation and makes its way into `invalidCounter` predominantly through data binding (for instance,
+   *     with {@link bindString}()). This somewhat blurs the lines between controller and view. A more principled
+   *     distribution of concerns would be to have the validation entirely done by controllers. The refactoring will be
+   *     left for the future...
    */
   public constructor(
       private readonly app_: App<T>,

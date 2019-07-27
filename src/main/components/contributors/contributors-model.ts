@@ -9,6 +9,11 @@ import {
   DEFAULT_NUM_MEMBERS,
 } from '../contributor/contributor-model';
 
+/**
+ * Value for {@link ContributorEditArea.id} to indicate an external contributor.
+ */
+export const EXTERNAL_CONTRIBUTOR_VALUE = 'youtrack-planning-js/external';
+
 export interface ContributorEditArea {
   hoursPerWeek: DataSignal<number>;
   id: DataSignal<string>;

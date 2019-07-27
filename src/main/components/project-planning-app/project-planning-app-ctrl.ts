@@ -122,8 +122,8 @@ export class ProjectPlanningAppCtrl {
     const appCtrl: AppCtrl<ProjectPlanningSettings> = AppCtrl.createDefaultAppCtrl(app, appComputation);
     const createContributorCtrl = (contributor: ContributorModel): ContributorCtrl =>
         new ContributorCtrl(contributor, app.settings.contributors);
-    const contributorsCtrl: ContributorsCtrl =
-        new ContributorsCtrl(app.settings.contributors, app.settings.transient, createContributorCtrl);
+    const contributorsCtrl: ContributorsCtrl = new ContributorsCtrl(
+        app.settings.contributors, app.settings.transient, createContributorCtrl, appCtrl.invalidCounter);
     const settingsCtrl: ProjectPlanningSettingsCtrl = new ProjectPlanningSettingsCtrl(
         app.settings, appCtrl.settingsCtrl, appCtrl.youTrackMetadataCtrl, contributorsCtrl);
     return new ProjectPlanningAppCtrl(app, appComputation, appCtrl, settingsCtrl);

@@ -2,7 +2,7 @@ import { DataSignal } from 's-js';
 import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
 import { Counter } from '../../utils/counter';
 import { bindString } from '../../utils/surplus';
-import { EDIT_AREA_CLASS, FORM_GROUP_CLASS, HELP_CLASS, INPUT_CLASS, LABEL_CLASS } from '../bootstrap';
+import { EDIT_AREA_CLASS, FORM_GROUP_CLASS, HELP_CLASS, INPUT_CLASS, LABEL_CLASS, OFFSET_CLASS } from '../bootstrap';
 import { SettingsCtrl } from './settings-ctrl';
 import { Settings } from './settings-model';
 
@@ -66,7 +66,7 @@ export function SettingsView({settings, ctrl, connectSignal, invalidCounter}: Se
       </div>
     </div>
     <div class={FORM_GROUP_CLASS}>
-      <div class={`offset-md-4 offset-lg-3 ${EDIT_AREA_CLASS}`}>
+      <div class={`${OFFSET_CLASS} ${EDIT_AREA_CLASS}`}>
         <button type="button" class="btn btn-sm btn-secondary" aria-describedby="loginHelp"
                 disabled={ctrl.normalizedBaseUrl().length === 0 || ctrl.normalizedHubUrl().length === 0 ||
                     settings.youTrackServiceId().length === 0}

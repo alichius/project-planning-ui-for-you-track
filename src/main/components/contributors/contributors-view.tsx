@@ -4,6 +4,7 @@ import { Counter } from '../../utils/counter';
 import { bindNumber, bindString, focusOnChangeToValue, sortableBindSarray, withClassIff } from '../../utils/surplus';
 import { User } from '../../youtrack-rest';
 import {
+  DRAGGABLE_HANDLE_CLASS,
   EDIT_AREA_CLASS,
   FORM_GROUP_CLASS,
   HELP_CLASS,
@@ -15,13 +16,12 @@ import {
 import { Contributor, ContributorKind } from '../contributor/contributor-model';
 import {
   ContributorView,
-  DRAGGABLE_HANDLE_CLASS,
   INPUT_WIDTH_3_DIGITS,
   MAX_HOURS_PER_WEEK,
   MAX_PERSONS_PER_CONTRIBUTORS,
 } from '../contributor/contributor-view';
-import { ContributorsCtrl, EXTERNAL_CONTRIBUTOR_VALUE } from './contributors-ctrl';
-import { ContributorEditArea } from './contributors-model';
+import { ContributorsCtrl } from './contributors-ctrl';
+import { ContributorEditArea, EXTERNAL_CONTRIBUTOR_VALUE } from './contributors-model';
 
 export interface ContributorsProperties {
   readonly label: string;
@@ -38,6 +38,7 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
       <div class={FORM_GROUP_CLASS}>
         <label class={LABEL_CLASS}>{label}</label>
         <div className={EDIT_AREA_CLASS}>
+          <Placeholder fn={withClassIff(() => contributors().length > 0, 'd-none')} />
           <ul class="list-group mb-3"
               fn1={sortableBindSarray(contributors, {handle: `.${DRAGGABLE_HANDLE_CLASS}`})}
               fn2={withClassIff(() => contributors().length === 0, 'd-none')}>
@@ -99,6 +100,14 @@ export function ContributorsView({label, contributors, contributorEditArea, ctrl
             contributor, click the “+” button.
           </small>
         </div>
+      </div>
+  );
+}
+
+function Placeholder(): HTMLElement {
+  return (
+      <div class="form-control form-control-sm is-invalid mb-3">
+        <label class="col-form-label col-form-label-sm list-placeholder">None added</label>
       </div>
   );
 }

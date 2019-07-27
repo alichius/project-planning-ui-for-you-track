@@ -2,13 +2,12 @@ import * as Surplus from 'surplus'; // lgtm [js/unused-local-variable]
 import { Counter } from '../../utils/counter';
 import { bindNumber, bindString } from '../../utils/surplus';
 import { User } from '../../youtrack-rest';
-import { INPUT_CLASS, INPUT_CLASS_RIGHT, PLAINTEXT_CLASS } from '../bootstrap';
+import { DRAGGABLE_HANDLE_CLASS, INPUT_CLASS, INPUT_CLASS_RIGHT, PLAINTEXT_CLASS } from '../bootstrap';
 import { ContributorCtrl } from './contributor-ctrl';
 import { Contributor, ContributorKind, YouTrackContributor } from './contributor-model';
 
 export const MAX_PERSONS_PER_CONTRIBUTORS = 100;
 export const MAX_HOURS_PER_WEEK = 7 * 24;
-export const DRAGGABLE_HANDLE_CLASS = 'draggable-handle';
 
 // Unfortunately, Firefox does not automatically resize <input> element of type number to the maximum required width.
 // https://stackoverflow.com/questions/22590483/why-does-adding-min-max-properties-change-the-width-of-a-numeric-html5-input-ele

@@ -214,7 +214,7 @@ interface SinglePlaceholderProperties {
  *
  * The {@link HTMLElement.innerText} of the placeholder is set to:
  * - the result of `unknownIdPlaceholder(selectedId)` if `selectedId` is contained in `choices`
- * - `defaultPlaceholder` if it is defined and if `selectedId` is non-empty.
+ * - `defaultPlaceholder` if it is defined and if `selectedId` is empty.
  *
  * @return in the two cases above, the placeholder (that is, the `children` property), otherwise `null`
  */
