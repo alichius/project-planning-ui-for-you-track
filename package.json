@@ -48,7 +48,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#6dec2d7612431016baea70e6ffb1f67079f8c082",
+    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#02f329bfb3ca1a1c7876f502d876bebdfbc4d021",
     "s-array": "^0.4.10",
     "s-js": "^0.4.9",
     "sortablejs": "^1.9.0",
@@ -57,7 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
-    "@types/jest": "^24.0.15",
+    "@types/jest": "^24.0.16",
     "@types/sortablejs": "^1.7.2",
     "babel-plugin-unassert": "^3.0.1",
     "jest": "^24.8.0",
@@ -72,7 +72,7 @@
     "source-map": "^0.7.3",
     "ts-jest": "^24.0.2",
     "tslint": "^5.18.0",
-    "typedoc": "TypeStrong/typedoc#e9b28ee2c336617687a968820515b6a37d44515f",
+    "typedoc": "^0.15.0",
     "typescript": "^3.5.3"
   },
   "jest": {

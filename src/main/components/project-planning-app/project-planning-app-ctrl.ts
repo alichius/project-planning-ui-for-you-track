@@ -113,8 +113,8 @@ export class ProjectPlanningAppCtrl {
 
 
   private readonly extendedProjectPlan_: DataSignal<ExtendedProjectPlan | undefined> = S.value(undefined);
-  private retrievedProjectPlanTimestamp: number | undefined;
-  private retrieveProjectPlanResult: ProjectPlan | undefined;
+  private retrievedProjectPlanTimestamp_: number | undefined;
+  private retrieveProjectPlanResult_: ProjectPlan | undefined;
 
 
   public static createDefaultProjectPlanningAppCtrl(
@@ -204,19 +204,19 @@ export class ProjectPlanningAppCtrl {
     const options: RetrieveProjectPlanOptions = {
       progressCallback: (percentDone) => this.appComputation_.progress(percentDone),
     };
-    this.retrieveProjectPlanResult = await retrieveProjectPlan(
+    this.retrieveProjectPlanResult_ = await retrieveProjectPlan(
         this.appCtrl.settingsCtrl.normalizedBaseUrl(),
         youTrackConfig,
         options
     );
-    this.retrievedProjectPlanTimestamp = Date.now();
+    this.retrievedProjectPlanTimestamp_ = Date.now();
     await this.updatePrediction(currentConfig);
   }
 
   private async updatePrediction(currentConfig: Plain<ProjectPlanningSettings>): Promise<void> {
     const youTrackMetadata: YouTrackMetadata | undefined = this.appComputation_.youTrackMetadata();
-    assert(this.retrieveProjectPlanResult !== undefined && youTrackMetadata !== undefined &&
-        this.retrievedProjectPlanTimestamp !== undefined);
+    assert(this.retrieveProjectPlanResult_ !== undefined && youTrackMetadata !== undefined &&
+        this.retrievedProjectPlanTimestamp_ !== undefined);
 
     const contributors: Contributor[] = [];
     const idToExternalContributorName = new Map<string, string>();
@@ -242,19 +242,19 @@ export class ProjectPlanningAppCtrl {
       minutesPerWeek: youTrackMetadata!.minutesPerWorkWeek,
       resolutionMs: SCHEDULING_RESOLUTION_MS,
       minActivityDuration: MIN_ACTIVITY_DURATION,
-      predictionStartTimeMs: this.retrievedProjectPlanTimestamp,
+      predictionStartTimeMs: this.retrievedProjectPlanTimestamp_,
     };
     const schedule: Schedule = await scheduleUnresolved(
-        this.retrieveProjectPlanResult!.issues, schedulingOptions);
+        this.retrieveProjectPlanResult_!.issues, schedulingOptions);
     const finalPlan: ProjectPlan | Failure = appendSchedule(
-        this.retrieveProjectPlanResult!, schedule, schedulingOptions.predictionStartTimeMs!);
+        this.retrieveProjectPlanResult_!, schedule, schedulingOptions.predictionStartTimeMs!);
     if (isFailure(finalPlan)) {
       throw finalPlan;
     } else {
       this.extendedProjectPlan_({
         plan: finalPlan,
         settings: currentConfig,
-        youTrackTimestamp: this.retrievedProjectPlanTimestamp!,
+        youTrackTimestamp: this.retrievedProjectPlanTimestamp_!,
         idToExternalContributorName,
       });
     }

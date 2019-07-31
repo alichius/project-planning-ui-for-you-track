@@ -1,7 +1,7 @@
 import { unreachableCase } from '../../utils/typescript';
 import { Action } from './project-planning-app-ctrl';
 
-export function projectPlanningActionLabel(action: Action) {
+export function projectPlanningActionLabel(action: Action): string {
   switch (action) {
     case Action.COMPLETE_SETTINGS: return 'Finish settings...';
     case Action.CONNECT: return 'Connect';
