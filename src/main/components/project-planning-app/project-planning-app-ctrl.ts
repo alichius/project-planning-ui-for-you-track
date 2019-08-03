@@ -82,11 +82,10 @@ export interface ExtendedProjectPlan {
   youTrackTimestamp: number;
 
   /**
-   * Mapping from contributor IDs in {@link plan} to the real name ({@link ExternalContributor.name}).
-   *
-   * This map only includes IDs for external contributors. IDs not in this map are YouTrack user IDs.
+   * Mapping from contributor IDs in {@link plan} to the index of the corresponding contributor in the
+   * {@link ProjectPlanningSettings.contributors} property of {@link settings}.
    */
-  idToExternalContributorName: Map<string, string>;
+  idToContributorIdx: Map<string, number>;
 }
 
 /**
@@ -219,24 +218,24 @@ export class ProjectPlanningAppCtrl {
         this.retrievedProjectPlanTimestamp_ !== undefined);
 
     const contributors: Contributor[] = [];
-    const idToExternalContributorName = new Map<string, string>();
-    for (const contributor of currentConfig.contributors) {
+    const idToContributorIdx = new Map<string, number>();
+    currentConfig.contributors.forEach((contributor, index) => {
       let id: string;
       let numMembers: number;
       if (contributor.type === ContributorKind.EXTERNAL) {
-        id = `${EXTERNAL_CONTRIBUTOR_ID_PREFIX}${idToExternalContributorName.size}`;
-        idToExternalContributorName.set(id, contributor.name);
+        id = `${EXTERNAL_CONTRIBUTOR_ID_PREFIX}${idToContributorIdx.size}`;
         numMembers = contributor.numMembers;
       } else {
         id = contributor.id;
         numMembers = 1;
       }
+      idToContributorIdx.set(id, index);
       contributors.push({
         id,
         minutesPerWeek: 60 * contributor.hoursPerWeek,
         numMembers,
       });
-    }
+    });
     const schedulingOptions: SchedulingOptions = {
       contributors,
       minutesPerWeek: youTrackMetadata!.minutesPerWorkWeek,
@@ -255,7 +254,7 @@ export class ProjectPlanningAppCtrl {
         plan: finalPlan,
         settings: currentConfig,
         youTrackTimestamp: this.retrievedProjectPlanTimestamp_!,
-        idToExternalContributorName,
+        idToContributorIdx,
       });
     }
   }

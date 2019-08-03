@@ -5,6 +5,8 @@ export * from './components/alerts/alerts-view';
 export * from './components/app/app-ctrl';
 export * from './components/app/app-model';
 
+export * from './components/contributor/contributor-model';
+
 export * from './components/contributors/contributors-ctrl';
 export * from './components/contributors/contributors-model';
 export * from './components/contributors/contributors-view';

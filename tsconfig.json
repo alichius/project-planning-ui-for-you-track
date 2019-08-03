@@ -41,6 +41,8 @@
 
     "src/main/components/base-views.tsx",
 
+    "src/main/components/contributor/contributor-model.ts",
+
     "src/main/components/contributors/contributors-ctrl.ts",
     "src/main/components/contributors/contributors-model.ts",
     "src/main/components/contributors/contributors-view.tsx",

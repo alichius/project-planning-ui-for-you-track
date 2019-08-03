@@ -48,7 +48,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#02f329bfb3ca1a1c7876f502d876bebdfbc4d021",
+    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#128f528bb892900bcc6b1ba0e44a90c7fb3ce5eb",
     "s-array": "^0.4.10",
     "s-js": "^0.4.9",
     "sortablejs": "^1.9.0",
@@ -64,7 +64,7 @@
     "parcel-bundler": "^1.12.3",
     "postcss-import": "^12.0.1",
     "regenerator-runtime": "^0.13.3",
-    "rollup": "^1.17.0",
+    "rollup": "^1.18.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-sourcemaps": "^0.4.2",
