@@ -73,6 +73,8 @@ export interface ExtendedProjectPlan {
 
   /**
    * The settings from the user interface.
+   *
+   * The settings are guaranteed to have been normalized with {@link toNormalizedPlainSettings}().
    */
   settings: Plain<ProjectPlanningSettings>;
 
