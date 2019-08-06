@@ -48,7 +48,7 @@
     "node": ">=10.0.0"
   },
   "dependencies": {
-    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#7203d312a07c6dc9bd6559579cbd6e1b3dcf61a5",
+    "@fschopp/project-planning-for-you-track": "fschopp/project-planning-for-you-track#76fee91ba1dec7fb34a6b1831c122cae69d15ff2",
     "s-array": "^0.4.10",
     "s-js": "^0.4.9",
     "sortablejs": "^1.9.0",

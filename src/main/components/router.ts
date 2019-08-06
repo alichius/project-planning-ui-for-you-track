@@ -1,7 +1,7 @@
 import { handlePotentialOauthRedirect } from '@fschopp/project-planning-for-you-track';
 import { strict as assert } from 'assert';
 import S, { DataSignal } from 's-js';
-import { Plain } from '../utils/s';
+import { Plain, toPlain } from '../utils/s';
 import { App, Page } from './app/app-model';
 import { Settings } from './settings/settings-model';
 
@@ -103,7 +103,7 @@ export class Router<T extends App<U>, U extends Settings = T['settings']> {
       // on is not static but updated whenever the computation runs. Now adding an element to SDataArray reruns this
       // computation, which then records the dependency on the element's data signal(s). The same works when removing
       // elements.
-      url.searchParams.set('config', JSON.stringify(app.settings));
+      url.searchParams.set('config', JSON.stringify(toPlain(app.settings)));
       assert(url.toString().startsWith(FABRICATED_HOST), 'URL.toString() returned unexpected result.');
       hashFromConfig = url.toString().substring(FABRICATED_HOST.length);
       if (currentHash !== hashFromConfig) {
